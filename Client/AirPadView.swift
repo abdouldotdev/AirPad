@@ -52,6 +52,15 @@ struct AirPadView: View {
     @AppStorage("serverIP") private var serverIP: String = "192.168.1.50"
     @State private var showSettings = false
     
+    let rowFn = [
+        MacKey(label: "esc", code: 53, widthMultiplier: 1.5, isDark: true),
+        MacKey(label: "F1", code: 122, isDark: true), MacKey(label: "F2", code: 120, isDark: true),
+        MacKey(label: "F3", code: 99, isDark: true), MacKey(label: "F4", code: 118, isDark: true),
+        MacKey(label: "F5", code: 96, isDark: true), MacKey(label: "F6", code: 97, isDark: true),
+        MacKey(label: "F7", code: 98, isDark: true), MacKey(label: "F8", code: 100, isDark: true),
+        MacKey(label: "F9", code: 101, isDark: true), MacKey(label: "F10", code: 109, isDark: true),
+        MacKey(label: "F11", code: 103, isDark: true), MacKey(label: "F12", code: 111, isDark: true)
+    ]
     let rowNum = [
         MacKey(label: "1", code: 18), MacKey(label: "2", code: 19), MacKey(label: "3", code: 20), MacKey(label: "4", code: 21), MacKey(label: "5", code: 23),
         MacKey(label: "6", code: 22), MacKey(label: "7", code: 26), MacKey(label: "8", code: 28), MacKey(label: "9", code: 25), MacKey(label: "0", code: 29)
@@ -99,6 +108,7 @@ struct AirPadView: View {
         ZStack {
             Color(white: 0.18)
             VStack(spacing: 8) {
+                KeyboardRow(keys: rowFn, client: client).frame(maxHeight: .infinity)
                 KeyboardRow(keys: rowNum, client: client).frame(maxHeight: .infinity)
                 KeyboardRow(keys: row1, client: client).frame(maxHeight: .infinity)
                 KeyboardRow(keys: row2, client: client).frame(maxHeight: .infinity)
