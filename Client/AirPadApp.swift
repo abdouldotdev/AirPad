@@ -4,7 +4,7 @@ import SwiftUI
 struct AirPadApp: App {
     var body: some Scene {
         WindowGroup {
-            TrackpadView()
+            AirPadView()
         }
     }
 }

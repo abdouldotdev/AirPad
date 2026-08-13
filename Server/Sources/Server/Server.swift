@@ -60,9 +60,18 @@ class MouseServer {
             }
         case "C": // C:1 (Click)
             clickMouse()
+        case "K": // K:keycode:state (Key Press)
+            if parts.count == 3, let code = UInt16(parts[1]), let state = Int(parts[2]) {
+                pressKey(keyCode: code, down: state == 1)
+            }
         default:
             break
         }
+    }
+    
+    private func pressKey(keyCode: UInt16, down: Bool) {
+        let event = CGEvent(keyboardEventSource: nil, virtualKey: CGKeyCode(keyCode), keyDown: down)
+        event?.post(tap: .cghidEventTap)
     }
     
     private func moveMouse(dx: Double, dy: Double) {
