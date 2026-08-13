@@ -381,11 +381,13 @@ struct SettingsView: View {
                         .font(.headline)
                         .foregroundColor(.secondary)
                     
-                    HStack {
+                    HStack(spacing: 12) {
                         TextField(T("e.g. 192.168.1.50", "ex: 192.168.1.50"), text: $serverIP)
                             .keyboardType(.decimalPad)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .frame(height: 44)
+                            .padding(.horizontal, 16)
+                            .frame(height: 48)
+                            .background(Color.gray.opacity(0.15))
+                            .cornerRadius(10)
                         
                         Button(action: {
                             client.connect(to: serverIP)
@@ -394,10 +396,12 @@ struct SettingsView: View {
                         }) {
                             Text(T("Connect", "Connecter"))
                                 .bold()
-                                .frame(height: 44)
-                                .padding(.horizontal, 12)
+                                .frame(height: 48)
+                                .padding(.horizontal, 20)
+                                .background(Color.blue)
+                                .foregroundColor(.white)
+                                .cornerRadius(10)
                         }
-                        .buttonStyle(.borderedProminent)
                     }
                 }
                 
