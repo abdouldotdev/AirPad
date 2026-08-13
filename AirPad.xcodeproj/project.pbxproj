@@ -102,6 +102,14 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					05F1EDD1C2625853484781D3 = {
+						DevelopmentTeam = HZ3366WY57;
+					};
+					80E80EAE2EA9B6FE5EDC75DD = {
+						DevelopmentTeam = HZ3366WY57;
+					};
+				};
 			};
 			buildConfigurationList = 5B38874CB5721F6BC454D594 /* Build configuration list for PBXProject "AirPad" */;
 			compatibilityVersion = "Xcode 14.0";
@@ -150,6 +158,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = HZ3366WY57;
 				GENERATE_INFOPLIST_FILE = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -231,6 +240,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = HZ3366WY57;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCameraUsageDescription = "AirPad needs camera access to scan QR codes for pairing.";
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "AirPad needs local network to connect to Mac.";
@@ -254,6 +264,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = HZ3366WY57;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCameraUsageDescription = "AirPad needs camera access to scan QR codes for pairing.";
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "AirPad needs local network to connect to Mac.";
@@ -331,6 +342,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = HZ3366WY57;
 				GENERATE_INFOPLIST_FILE = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
