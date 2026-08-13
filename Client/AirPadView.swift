@@ -134,10 +134,6 @@ struct AirPadView: View {
         MacKey(label: "", code: 49, widthMultiplier: 5.5),
         MacKey(label: "⌘", code: 54, widthMultiplier: 1.2, isDark: true)
     ]
-    
-    @State private var showTrackpad = false
-    @State private var isBlinking = false
-    
     var body: some View {
         ZStack {
             Color(white: 0.12).ignoresSafeArea()
