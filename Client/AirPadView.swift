@@ -62,7 +62,7 @@ struct AirPadView: View {
     ]
     let row2 = [
         MacKey(label: "A", code: 0), MacKey(label: "S", code: 1), MacKey(label: "D", code: 2), MacKey(label: "F", code: 3), MacKey(label: "G", code: 5),
-        MacKey(label: "H", code: 4), MacKey(label: "J", code: 38), MacKey(label: "K", code: 40), MacKey(label: "L", code: 37), MacKey(label: "Ret", code: 36, widthMultiplier: 1.5, isDark: true)
+        MacKey(label: "H", code: 4), MacKey(label: "J", code: 38), MacKey(label: "K", code: 40), MacKey(label: "L", code: 37), MacKey(label: "⏎", code: 36, widthMultiplier: 1.5, isDark: true)
     ]
     let row3 = [
         MacKey(label: "⇧", code: 56, widthMultiplier: 1.2, isDark: true), MacKey(label: "Z", code: 6), MacKey(label: "X", code: 7), MacKey(label: "C", code: 8), MacKey(label: "V", code: 9),
