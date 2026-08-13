@@ -2,19 +2,18 @@ import SwiftUI
 import Network
 import CoreGraphics
 import AppKit
+import ServiceManagement
 
 @main
 struct AirPadMacApp: App {
     @StateObject private var server = MouseServer()
     
     var body: some Scene {
-        // Fenêtre classique pour que l'UI soit bien visible au centre de l'écran
         WindowGroup {
             MacMainView(server: server)
         }
         .windowStyle(.hiddenTitleBar)
         
-        // On garde l'icône dans la barre de menu en bonus
         MenuBarExtra(server.connectedDevice != nil ? "AirPad (Connecté)" : (server.isListening ? "AirPad (Attente)" : "AirPad"), systemImage: server.connectedDevice != nil ? "macbook.and.iphone" : "macbook") {
             VStack {
                 Button(server.isListening ? "Arrêter le serveur" : "Démarrer l'appairage") {
@@ -33,31 +32,33 @@ struct AirPadMacApp: App {
 struct MacMainView: View {
     @ObservedObject var server: MouseServer
     
+    @AppStorage("launchAtLogin") private var launchAtLogin = false
+    @AppStorage("autoStart") private var autoStart = false
+    
     var body: some View {
         VStack(spacing: 24) {
             ZStack {
                 Circle()
                     .fill(server.isListening ? Color.blue.opacity(0.1) : Color.gray.opacity(0.1))
-                    .frame(width: 120, height: 120)
+                    .frame(width: 100, height: 100)
                 
                 Image(systemName: server.connectedDevice != nil ? "iphone.radiowaves.left.and.right" : "macbook.and.iphone")
-                    .font(.system(size: 50))
+                    .font(.system(size: 40))
                     .foregroundColor(server.isListening ? .blue : .gray)
             }
             
-            VStack(spacing: 8) {
+            VStack(spacing: 4) {
                 Text("AirPad")
-                    .font(.system(size: 32, weight: .bold))
-                
+                    .font(.system(size: 28, weight: .bold))
                 Text("Transformez votre iPhone en Trackpad & Clavier")
-                    .font(.subheadline)
+                    .font(.caption)
                     .foregroundColor(.secondary)
             }
             
-            Divider().padding(.vertical, 8)
+            Divider()
             
             if server.isListening {
-                VStack(spacing: 16) {
+                VStack(spacing: 12) {
                     if let ip = getLocalIPAddress() {
                         VStack(spacing: 4) {
                             Text("Entrez cette IP sur votre iPhone :")
@@ -65,11 +66,11 @@ struct MacMainView: View {
                                 .foregroundColor(.secondary)
                             
                             Text(ip)
-                                .font(.system(size: 28, weight: .heavy, design: .monospaced))
-                                .padding(.horizontal, 20)
-                                .padding(.vertical, 10)
+                                .font(.system(size: 24, weight: .heavy, design: .monospaced))
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 8)
                                 .background(Color.blue.opacity(0.1))
-                                .cornerRadius(12)
+                                .cornerRadius(8)
                         }
                     }
                     
@@ -80,9 +81,9 @@ struct MacMainView: View {
                             Text("Connecté à : \(device)")
                                 .font(.headline)
                         }
-                        .padding()
+                        .padding(10)
                         .background(Color.green.opacity(0.1))
-                        .cornerRadius(10)
+                        .cornerRadius(8)
                     } else {
                         HStack {
                             ProgressView().scaleEffect(0.7)
@@ -98,8 +99,6 @@ struct MacMainView: View {
                     .padding()
             }
             
-            Spacer()
-            
             Button(action: {
                 if server.isListening {
                     server.stop()
@@ -110,15 +109,54 @@ struct MacMainView: View {
                 Text(server.isListening ? "Arrêter le serveur" : "Démarrer l'appairage")
                     .font(.headline)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 8)
+                    .padding(.vertical, 4)
             }
             .buttonStyle(.borderedProminent)
             .tint(server.isListening ? .red : .blue)
             .controlSize(.large)
+            
+            Divider()
+            
+            // Section Préférences
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Réglages").font(.headline)
+                
+                Toggle("Lancer AirPad au démarrage du Mac", isOn: $launchAtLogin)
+                    .onChange(of: launchAtLogin) { newValue in
+                        do {
+                            if newValue {
+                                try SMAppService.mainApp.register()
+                            } else {
+                                try SMAppService.mainApp.unregister()
+                            }
+                        } catch {
+                            print("Erreur SMAppService : \(error)")
+                        }
+                    }
+                
+                Toggle("Activer le serveur automatiquement au lancement", isOn: $autoStart)
+                    .onChange(of: autoStart) { newValue in
+                        if newValue && !server.isListening {
+                            server.start()
+                        }
+                    }
+            }
+            .font(.callout)
+            .padding(.top, 4)
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding(40)
-        .frame(width: 450, height: 500)
+        .padding(30)
+        .frame(width: 400, height: 600)
         .background(VisualEffectView().ignoresSafeArea())
+        .onAppear {
+            // Synchronisation de l'état SMAppService
+            launchAtLogin = SMAppService.mainApp.status == .enabled
+            
+            // Lancement automatique si configuré
+            if autoStart && !server.isListening {
+                server.start()
+            }
+        }
     }
 }
 
