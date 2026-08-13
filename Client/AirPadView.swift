@@ -14,9 +14,7 @@ class NetworkClient: ObservableObject {
         connection?.stateUpdateHandler = { [weak self] state in
             DispatchQueue.main.async {
                 self?.isConnected = (state == .ready)
-                if state == .ready {
-                    self?.send("INIT:\(UIDevice.current.name)")
-                }
+                if state == .ready { self?.send("INIT:\(UIDevice.current.name)") }
             }
         }
         connection?.start(queue: queue)
@@ -30,7 +28,6 @@ class NetworkClient: ObservableObject {
     
     private func send(_ message: String) {
         guard let data = message.data(using: .utf8) else { return }
-        // Pas de complétion pour éviter la surcharge locale, optimisation ultra-latency
         connection?.send(content: data, completion: .contentProcessed({ _ in }))
     }
 }
@@ -43,7 +40,6 @@ struct MacKey: Identifiable {
     var isDark: Bool = false
 }
 
-// Vue principale
 struct AirPadView: View {
     @StateObject private var client = NetworkClient()
     @AppStorage("serverIP") private var serverIP: String = "192.168.1.50"
@@ -71,48 +67,64 @@ struct AirPadView: View {
         MacKey(label: "⌘", code: 54, widthMultiplier: 1.2, isDark: true), MacKey(label: "⌥", code: 61, isDark: true)
     ]
     
+    var trackpadZone: some View {
+        ZStack {
+            TrackpadUIKitView(client: client)
+            VStack {
+                HStack {
+                    Spacer()
+                    Button(action: { showSettings.toggle() }) {
+                        Image(systemName: client.isConnected ? "macbook.and.iphone" : "wifi.slash")
+                            .foregroundColor(client.isConnected ? .white.opacity(0.8) : .red)
+                            .padding(12)
+                            .background(Color.black.opacity(0.4))
+                            .clipShape(Circle())
+                    }
+                    .padding()
+                }
+                Spacer()
+            }
+        }
+    }
+    
+    var keyboardZone: some View {
+        ZStack {
+            Color(white: 0.18)
+            VStack(spacing: 8) {
+                KeyboardRow(keys: rowNum, client: client).frame(maxHeight: .infinity)
+                KeyboardRow(keys: row1, client: client).frame(maxHeight: .infinity)
+                KeyboardRow(keys: row2, client: client).frame(maxHeight: .infinity)
+                KeyboardRow(keys: row3, client: client).frame(maxHeight: .infinity)
+                KeyboardRow(keys: row4, client: client).frame(maxHeight: .infinity)
+            }
+            .padding(8)
+        }
+    }
+    
     var body: some View {
         GeometryReader { geo in
-            VStack(spacing: 0) {
-                // TRACKPAD
-                ZStack {
-                    TrackpadUIKitView(client: client)
-                        .edgesIgnoringSafeArea(.all)
-                    
-                    VStack {
-                        HStack {
-                            Spacer()
-                            Button(action: { showSettings.toggle() }) {
-                                Image(systemName: client.isConnected ? "macbook.and.iphone" : "wifi.slash")
-                                    .foregroundColor(client.isConnected ? .white.opacity(0.8) : .red)
-                                    .padding(12)
-                                    .background(Color.black.opacity(0.4))
-                                    .clipShape(Circle())
-                            }
-                            .padding()
-                        }
-                        Spacer()
+            let isLandscape = geo.size.width > geo.size.height
+            
+            Group {
+                if isLandscape {
+                    HStack(spacing: 0) {
+                        trackpadZone
+                            .frame(width: geo.size.width * 0.45)
+                        keyboardZone
+                            .frame(width: geo.size.width * 0.55)
                     }
-                }
-                .frame(height: geo.size.height * 0.45)
-                
-                // KEYBOARD
-                ZStack {
-                    Color(white: 0.18).edgesIgnoringSafeArea(.bottom)
-                    VStack(spacing: 8) {
-                        KeyboardRow(keys: rowNum, client: client)
-                        KeyboardRow(keys: row1, client: client)
-                        KeyboardRow(keys: row2, client: client)
-                        KeyboardRow(keys: row3, client: client)
-                        KeyboardRow(keys: row4, client: client)
+                } else {
+                    VStack(spacing: 0) {
+                        trackpadZone
+                            .frame(height: geo.size.height * 0.45)
+                        keyboardZone
+                            .frame(height: geo.size.height * 0.55)
                     }
-                    .padding(.horizontal, 6)
-                    .padding(.top, 12)
-                    .padding(.bottom, 24)
                 }
             }
         }
-        .edgesIgnoringSafeArea(.bottom)
+        .background(Color(white: 0.12).edgesIgnoringSafeArea(.all)) // Fond global
+        // Pas de ignoresSafeArea ici pour que le clavier ne se coupe pas sous le home indicator
         .sheet(isPresented: $showSettings) {
             SettingsView(client: client, serverIP: $serverIP)
         }
@@ -120,7 +132,7 @@ struct AirPadView: View {
     }
 }
 
-// UIKit wrapper pour capturer tous les gestes complexes sans interférences
+// Trackpad UIKit
 struct TrackpadUIKitView: UIViewRepresentable {
     let client: NetworkClient
     
@@ -128,23 +140,19 @@ struct TrackpadUIKitView: UIViewRepresentable {
         let view = UIView()
         view.backgroundColor = UIColor(white: 0.12, alpha: 1.0)
         
-        // 1. Mouvement Souris (1 doigt)
         let pan = UIPanGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handlePan(_:)))
         pan.maximumNumberOfTouches = 1
         view.addGestureRecognizer(pan)
         
-        // 2. Défilement / Scroll (2 doigts)
         let scroll = UIPanGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handleScroll(_:)))
         scroll.minimumNumberOfTouches = 2
         scroll.maximumNumberOfTouches = 2
         view.addGestureRecognizer(scroll)
         
-        // 3. Clic gauche (1 doigt)
         let tap = UITapGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handleTap(_:)))
         tap.numberOfTouchesRequired = 1
         view.addGestureRecognizer(tap)
         
-        // 4. Clic droit (2 doigts)
         let rightTap = UITapGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handleRightTap(_:)))
         rightTap.numberOfTouchesRequired = 2
         view.addGestureRecognizer(rightTap)
@@ -153,10 +161,7 @@ struct TrackpadUIKitView: UIViewRepresentable {
     }
     
     func updateUIView(_ uiView: UIView, context: Context) {}
-    
-    func makeCoordinator() -> Coordinator {
-        Coordinator(client: client)
-    }
+    func makeCoordinator() -> Coordinator { Coordinator(client: client) }
     
     class Coordinator: NSObject {
         let client: NetworkClient
@@ -167,30 +172,22 @@ struct TrackpadUIKitView: UIViewRepresentable {
         
         @objc func handlePan(_ gesture: UIPanGestureRecognizer) {
             let point = gesture.location(in: gesture.view)
-            if gesture.state == .began {
+            if gesture.state == .began { lastPanPoint = point }
+            else if gesture.state == .changed, let last = lastPanPoint {
+                client.sendMove(dx: point.x - last.x, dy: point.y - last.y)
                 lastPanPoint = point
-            } else if gesture.state == .changed, let last = lastPanPoint {
-                let dx = point.x - last.x
-                let dy = point.y - last.y
-                client.sendMove(dx: dx, dy: dy)
-                lastPanPoint = point
-            } else if gesture.state == .ended {
-                lastPanPoint = nil
             }
+            else if gesture.state == .ended { lastPanPoint = nil }
         }
         
         @objc func handleScroll(_ gesture: UIPanGestureRecognizer) {
             let point = gesture.location(in: gesture.view)
-            if gesture.state == .began {
+            if gesture.state == .began { lastScrollPoint = point }
+            else if gesture.state == .changed, let last = lastScrollPoint {
+                client.sendScroll(dx: point.x - last.x, dy: point.y - last.y)
                 lastScrollPoint = point
-            } else if gesture.state == .changed, let last = lastScrollPoint {
-                let dx = point.x - last.x
-                let dy = point.y - last.y
-                client.sendScroll(dx: dx, dy: dy)
-                lastScrollPoint = point
-            } else if gesture.state == .ended {
-                lastScrollPoint = nil
             }
+            else if gesture.state == .ended { lastScrollPoint = nil }
         }
         
         @objc func handleTap(_ gesture: UITapGestureRecognizer) {
@@ -208,11 +205,24 @@ struct TrackpadUIKitView: UIViewRepresentable {
 struct KeyboardRow: View {
     let keys: [MacKey]
     let client: NetworkClient
+    let totalMultiplier: CGFloat
+    
+    init(keys: [MacKey], client: NetworkClient) {
+        self.keys = keys
+        self.client = client
+        self.totalMultiplier = keys.reduce(0) { $0 + $1.widthMultiplier }
+    }
     
     var body: some View {
-        HStack(spacing: 6) {
-            ForEach(keys) { key in
-                PhysicalKeyView(key: key, client: client)
+        GeometryReader { geo in
+            let spacing: CGFloat = 6
+            let availableWidth = geo.size.width - (CGFloat(keys.count - 1) * spacing)
+            
+            HStack(spacing: spacing) {
+                ForEach(keys) { key in
+                    PhysicalKeyView(key: key, client: client)
+                        .frame(width: max(0, availableWidth * (key.widthMultiplier / totalMultiplier)))
+                }
             }
         }
     }
@@ -224,44 +234,42 @@ struct PhysicalKeyView: View {
     @State private var isPressed = false
     
     var body: some View {
-        GeometryReader { proxy in
-            ZStack {
-                RoundedRectangle(cornerRadius: 6, style: .continuous)
-                    .fill(Color.black.opacity(0.6))
-                    .offset(y: isPressed ? 1 : 3)
-                
-                RoundedRectangle(cornerRadius: 6, style: .continuous)
-                    .fill(LinearGradient(
-                        gradient: Gradient(colors: [
-                            key.isDark ? Color(white: 0.2) : Color(white: 0.35),
-                            key.isDark ? Color(white: 0.15) : Color(white: 0.28)
-                        ]),
-                        startPoint: .top, endPoint: .bottom
-                    ))
-                    .overlay(RoundedRectangle(cornerRadius: 6).stroke(Color.white.opacity(0.1), lineWidth: 0.5))
-                    .offset(y: isPressed ? 2 : 0)
-                
-                Text(key.label)
-                    .font(.system(size: key.label.count > 1 ? 14 : 18, weight: .regular))
-                    .foregroundColor(.white.opacity(0.9))
-                    .offset(y: isPressed ? 2 : 0)
-            }
-            .gesture(
-                DragGesture(minimumDistance: 0)
-                    .onChanged { _ in
-                        if !isPressed {
-                            isPressed = true
-                            UIImpactFeedbackGenerator(style: .rigid).impactOccurred()
-                            client.sendKey(code: key.code, isDown: true)
-                        }
-                    }
-                    .onEnded { _ in
-                        isPressed = false
-                        client.sendKey(code: key.code, isDown: false)
-                    }
-            )
+        ZStack {
+            RoundedRectangle(cornerRadius: 6, style: .continuous)
+                .fill(Color.black.opacity(0.6))
+                .offset(y: isPressed ? 1 : 3)
+            
+            RoundedRectangle(cornerRadius: 6, style: .continuous)
+                .fill(LinearGradient(
+                    gradient: Gradient(colors: [
+                        key.isDark ? Color(white: 0.2) : Color(white: 0.35),
+                        key.isDark ? Color(white: 0.15) : Color(white: 0.28)
+                    ]),
+                    startPoint: .top, endPoint: .bottom
+                ))
+                .overlay(RoundedRectangle(cornerRadius: 6).stroke(Color.white.opacity(0.1), lineWidth: 0.5))
+                .offset(y: isPressed ? 2 : 0)
+            
+            Text(key.label)
+                .font(.system(size: key.label.count > 1 ? 14 : 18, weight: .regular))
+                .foregroundColor(.white.opacity(0.9))
+                .offset(y: isPressed ? 2 : 0)
         }
-        .frame(width: (UIScreen.main.bounds.width - 66) / 10 * key.widthMultiplier, height: 44)
+        .frame(maxHeight: .infinity)
+        .gesture(
+            DragGesture(minimumDistance: 0)
+                .onChanged { _ in
+                    if !isPressed {
+                        isPressed = true
+                        UIImpactFeedbackGenerator(style: .rigid).impactOccurred()
+                        client.sendKey(code: key.code, isDown: true)
+                    }
+                }
+                .onEnded { _ in
+                    isPressed = false
+                    client.sendKey(code: key.code, isDown: false)
+                }
+        )
     }
 }
 
