@@ -51,6 +51,7 @@ struct AirPadView: View {
     @StateObject private var client = NetworkClient()
     @AppStorage("serverIP") private var serverIP: String = "192.168.1.50"
     @AppStorage("advancedMode") private var advancedMode = false
+    @AppStorage("keyboardLayout") private var keyboardLayout = "QWERTY"
     @State private var showSettings = false
     
     let rowFn = [
@@ -66,22 +67,53 @@ struct AirPadView: View {
         MacKey(label: "1", code: 18), MacKey(label: "2", code: 19), MacKey(label: "3", code: 20), MacKey(label: "4", code: 21), MacKey(label: "5", code: 23),
         MacKey(label: "6", code: 22), MacKey(label: "7", code: 26), MacKey(label: "8", code: 28), MacKey(label: "9", code: 25), MacKey(label: "0", code: 29)
     ]
-    let row1 = [
-        MacKey(label: "Q", code: 12), MacKey(label: "W", code: 13), MacKey(label: "E", code: 14), MacKey(label: "R", code: 15), MacKey(label: "T", code: 17),
-        MacKey(label: "Y", code: 16), MacKey(label: "U", code: 32), MacKey(label: "I", code: 34), MacKey(label: "O", code: 31), MacKey(label: "P", code: 35)
-    ]
-    let row2 = [
-        MacKey(label: "A", code: 0), MacKey(label: "S", code: 1), MacKey(label: "D", code: 2), MacKey(label: "F", code: 3), MacKey(label: "G", code: 5),
-        MacKey(label: "H", code: 4), MacKey(label: "J", code: 38), MacKey(label: "K", code: 40), MacKey(label: "L", code: 37), MacKey(label: "⏎", code: 36, widthMultiplier: 1.5, isDark: true)
-    ]
-    let row3 = [
-        MacKey(label: "⇧", code: 56, widthMultiplier: 1.2, isDark: true), MacKey(label: "Z", code: 6), MacKey(label: "X", code: 7), MacKey(label: "C", code: 8), MacKey(label: "V", code: 9),
-        MacKey(label: "B", code: 11), MacKey(label: "N", code: 45), MacKey(label: "M", code: 46), MacKey(label: "⌫", code: 51, widthMultiplier: 1.5, isDark: true)
-    ]
+    
+    var row1: [MacKey] {
+        if keyboardLayout == "AZERTY" {
+            return [
+                MacKey(label: "A", code: 12), MacKey(label: "Z", code: 13), MacKey(label: "E", code: 14), MacKey(label: "R", code: 15), MacKey(label: "T", code: 17),
+                MacKey(label: "Y", code: 16), MacKey(label: "U", code: 32), MacKey(label: "I", code: 34), MacKey(label: "O", code: 31), MacKey(label: "P", code: 35)
+            ]
+        } else {
+            return [
+                MacKey(label: "Q", code: 12), MacKey(label: "W", code: 13), MacKey(label: "E", code: 14), MacKey(label: "R", code: 15), MacKey(label: "T", code: 17),
+                MacKey(label: "Y", code: 16), MacKey(label: "U", code: 32), MacKey(label: "I", code: 34), MacKey(label: "O", code: 31), MacKey(label: "P", code: 35)
+            ]
+        }
+    }
+    
+    var row2: [MacKey] {
+        if keyboardLayout == "AZERTY" {
+            return [
+                MacKey(label: "Q", code: 0), MacKey(label: "S", code: 1), MacKey(label: "D", code: 2), MacKey(label: "F", code: 3), MacKey(label: "G", code: 5),
+                MacKey(label: "H", code: 4), MacKey(label: "J", code: 38), MacKey(label: "K", code: 40), MacKey(label: "L", code: 37), MacKey(label: "M", code: 41), MacKey(label: "⏎", code: 36, widthMultiplier: 2.2, isDark: true)
+            ]
+        } else {
+            return [
+                MacKey(label: "A", code: 0), MacKey(label: "S", code: 1), MacKey(label: "D", code: 2), MacKey(label: "F", code: 3), MacKey(label: "G", code: 5),
+                MacKey(label: "H", code: 4), MacKey(label: "J", code: 38), MacKey(label: "K", code: 40), MacKey(label: "L", code: 37), MacKey(label: "⏎", code: 36, widthMultiplier: 2.2, isDark: true)
+            ]
+        }
+    }
+    
+    var row3: [MacKey] {
+        if keyboardLayout == "AZERTY" {
+            return [
+                MacKey(label: "⇧", code: 56, widthMultiplier: 1.2, isDark: true), MacKey(label: "W", code: 6), MacKey(label: "X", code: 7), MacKey(label: "C", code: 8), MacKey(label: "V", code: 9),
+                MacKey(label: "B", code: 11), MacKey(label: "N", code: 45), MacKey(label: ",", code: 46), MacKey(label: ";", code: 43), MacKey(label: "⌫", code: 51, widthMultiplier: 1.5, isDark: true)
+            ]
+        } else {
+            return [
+                MacKey(label: "⇧", code: 56, widthMultiplier: 1.2, isDark: true), MacKey(label: "Z", code: 6), MacKey(label: "X", code: 7), MacKey(label: "C", code: 8), MacKey(label: "V", code: 9),
+                MacKey(label: "B", code: 11), MacKey(label: "N", code: 45), MacKey(label: "M", code: 46), MacKey(label: "⌫", code: 51, widthMultiplier: 1.5, isDark: true)
+            ]
+        }
+    }
+    
     let row4 = [
         MacKey(label: "fn", code: 63, isDark: true), MacKey(label: "⌃", code: 59, isDark: true), MacKey(label: "⌥", code: 58, isDark: true), MacKey(label: "⌘", code: 55, widthMultiplier: 1.2, isDark: true),
-        MacKey(label: "", code: 49, widthMultiplier: 4.0),
-        MacKey(label: "⌘", code: 54, widthMultiplier: 1.2, isDark: true), MacKey(label: "⌥", code: 61, isDark: true)
+        MacKey(label: "", code: 49, widthMultiplier: 5.5),
+        MacKey(label: "⌘", code: 54, widthMultiplier: 1.2, isDark: true)
     ]
     
     @State private var showTrackpad = false
@@ -226,7 +258,7 @@ struct AirPadView: View {
                     KeyboardRow(keys: row4, client: client).frame(height: baseKeyWidth)
                 }
                 .padding(8)
-                .background(Color(white: 0.18).cornerRadius(16))
+                .background(Color.black.opacity(0.3).cornerRadius(16))
             }
         }
         .padding(.horizontal, 8)
@@ -335,25 +367,31 @@ struct PhysicalKeyView: View {
     
     var body: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 6, style: .continuous)
-                .fill(Color.black.opacity(0.6))
-                .offset(y: isPressed ? 1 : 3)
+            // Drop shadow depth
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .fill(Color.black.opacity(0.5))
+                .offset(y: isPressed ? 1 : 4)
             
-            RoundedRectangle(cornerRadius: 6, style: .continuous)
-                .fill(LinearGradient(
-                    gradient: Gradient(colors: [
-                        key.isDark ? Color(white: 0.2) : Color(white: 0.35),
-                        key.isDark ? Color(white: 0.15) : Color(white: 0.28)
-                    ]),
-                    startPoint: .top, endPoint: .bottom
-                ))
-                .overlay(RoundedRectangle(cornerRadius: 6).stroke(Color.white.opacity(0.1), lineWidth: 0.5))
-                .offset(y: isPressed ? 2 : 0)
+            // Glassmorphism surface
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .fill(key.isDark ? Color.black.opacity(0.2) : Color.white.opacity(0.1))
+                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        .stroke(
+                            LinearGradient(
+                                colors: [.white.opacity(key.isDark ? 0.1 : 0.3), .clear, .black.opacity(0.3)],
+                                startPoint: .top, endPoint: .bottom
+                            ),
+                            lineWidth: 1
+                        )
+                )
+                .offset(y: isPressed ? 3 : 0)
             
             Text(key.label)
-                .font(.system(size: key.label.count > 1 ? 14 : 18, weight: .regular))
+                .font(.system(size: key.label.count > 1 ? 14 : 18, weight: .medium))
                 .foregroundColor(.white.opacity(0.9))
-                .offset(y: isPressed ? 2 : 0)
+                .offset(y: isPressed ? 3 : 0)
         }
         .frame(maxHeight: .infinity)
         .gesture(
@@ -436,6 +474,7 @@ struct SettingsView: View {
     @Binding var serverIP: String
     @Environment(\.presentationMode) var presentationMode
     @AppStorage("advancedMode") private var advancedMode = false
+    @AppStorage("keyboardLayout") private var keyboardLayout = "QWERTY"
     
     var body: some View {
         NavigationView {
@@ -485,10 +524,17 @@ struct SettingsView: View {
                     }
                 }
                 
-                VStack(alignment: .leading, spacing: 8) {
+                VStack(alignment: .leading, spacing: 12) {
                     Text(T("Preferences", "Préférences"))
                         .font(.headline)
                         .foregroundColor(.secondary)
+                    
+                    Picker(T("Keyboard Layout", "Disposition du clavier"), selection: $keyboardLayout) {
+                        Text("QWERTY").tag("QWERTY")
+                        Text("AZERTY").tag("AZERTY")
+                    }
+                    .pickerStyle(SegmentedPickerStyle())
+                    .padding(.bottom, 4)
                     
                     Toggle(T("Advanced Mode (F1-F12 Keys)", "Mode Avancé (Touches F1-F12)"), isOn: $advancedMode)
                         .padding()
