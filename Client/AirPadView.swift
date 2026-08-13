@@ -58,7 +58,7 @@ struct AirPadView: View {
     @AppStorage("advancedMode") private var advancedMode = false
     @AppStorage("keyboardLayout") private var keyboardLayout = "QWERTY"
     @AppStorage("trackingSpeed") private var trackingSpeed: Double = 1.0
-    @AppStorage("trackpadRatio") private var trackpadRatio: Double = 0.5
+    @AppStorage("trackpadRatio") private var trackpadRatio: Double = 0.0
     @State private var dragOffset: CGFloat = 0
     @State private var showSettings = false
     @State private var isBlinking = false
@@ -179,17 +179,17 @@ struct AirPadView: View {
                 
                 // MAIN CONTENT
                 GeometryReader { geo in
-                    let currentRatio = trackpadRatio + (dragOffset / geo.size.height)
+                    let currentRatio = trackpadRatio - (dragOffset / geo.size.height)
                     let clampedRatio = min(max(currentRatio, 0.0), 1.0)
                     let trackpadHeight = max(0, geo.size.height * clampedRatio)
                     let keyboardHeight = max(0, geo.size.height * (1.0 - clampedRatio) - 40)
                     
                     VStack(spacing: 0) {
-                        macTrackpadZone(height: trackpadHeight)
-                            .frame(height: trackpadHeight)
+                        keyboardZone
+                            .frame(height: keyboardHeight)
                             .clipped()
-                            .opacity(trackpadHeight > 50 ? 1 : 0)
-                        
+                            .opacity(keyboardHeight > 50 ? 1 : 0)
+                            
                         // DOCK HANDLE
                         ZStack {
                             Color(white: 0.1)
@@ -200,20 +200,29 @@ struct AirPadView: View {
                         }
                         .frame(height: 40)
                         .contentShape(Rectangle())
+                        .onTapGesture {
+                            withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                                trackpadRatio = trackpadRatio > 0.1 ? 0.0 : 0.5
+                            }
+                        }
                         .gesture(DragGesture()
                             .onChanged { val in
                                 dragOffset = val.translation.height
                             }
                             .onEnded { val in
-                                trackpadRatio = min(max(trackpadRatio + (val.translation.height / geo.size.height), 0.0), 1.0)
+                                var newRatio = trackpadRatio - (val.translation.height / geo.size.height)
+                                if newRatio < 0.15 { newRatio = 0.0 }
+                                trackpadRatio = min(max(newRatio, 0.0), 1.0)
                                 dragOffset = 0
                             }
                         )
                         
-                        keyboardZone
-                            .frame(height: keyboardHeight)
-                            .clipped()
-                            .opacity(keyboardHeight > 50 ? 1 : 0)
+                        if trackpadHeight > 0 {
+                            macTrackpadZone(height: trackpadHeight)
+                                .frame(height: trackpadHeight)
+                                .clipped()
+                                .opacity(trackpadHeight > 20 ? 1 : 0)
+                        }
                     }
                 }
             }

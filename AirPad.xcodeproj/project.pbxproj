@@ -8,12 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		05957752250D9D066F5CDC20 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F57A0E6C2693DFD46FF77CA5 /* Assets.xcassets */; };
+		18B56AD6FE02F48A96311696 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 25300F70EF6EA18806DD4C45 /* Assets.xcassets */; };
 		62C9FD500F79DA9B5B27DD4D /* AirPadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E61569FF366665859E0855F /* AirPadView.swift */; };
 		C5FA355DCCB48377595DEE5A /* AirPadApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB77FB4CC19AAE1CDADC28E1 /* AirPadApp.swift */; };
 		DE63B14CBD86E8E77DD59F59 /* Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99582E017A94B2D80BA60854 /* Server.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		25300F70EF6EA18806DD4C45 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2AEF147DBF538D4B9424A95C /* AirPadServer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AirPadServer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		38CCE540C62526E9FD4D4D90 /* AirPadClient.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = AirPadClient.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6E61569FF366665859E0855F /* AirPadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AirPadView.swift; sourceTree = "<group>"; };
@@ -24,6 +26,14 @@
 
 /* Begin PBXGroup section */
 		26FC12AB223FFD6B4DD4A9EE /* Server */ = {
+			isa = PBXGroup;
+			children = (
+				25300F70EF6EA18806DD4C45 /* Assets.xcassets */,
+			);
+			path = Server;
+			sourceTree = "<group>";
+		};
+		65BE1F63AAE168597AA14654 /* Server */ = {
 			isa = PBXGroup;
 			children = (
 				99582E017A94B2D80BA60854 /* Server.swift */,
@@ -47,6 +57,7 @@
 			children = (
 				6DF7A2FFE881BD7DF91C35E4 /* Client */,
 				26FC12AB223FFD6B4DD4A9EE /* Server */,
+				65BE1F63AAE168597AA14654 /* Server */,
 				95C31440F925CC38D4918A3D /* Products */,
 			);
 			sourceTree = "<group>";
@@ -86,6 +97,7 @@
 			buildConfigurationList = 8514E122875806B64B9DD199 /* Build configuration list for PBXNativeTarget "AirPadServer" */;
 			buildPhases = (
 				14972A077F5299B789FD1646 /* Sources */,
+				EF4B341818FD8A15E5575C2C /* Resources */,
 			);
 			buildRules = (
 			);
@@ -141,6 +153,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				05957752250D9D066F5CDC20 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EF4B341818FD8A15E5575C2C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				18B56AD6FE02F48A96311696 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
