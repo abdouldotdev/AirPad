@@ -77,6 +77,7 @@ struct AirPadView: View {
     var trackpadZone: some View {
         ZStack {
             TrackpadUIKitView(client: client)
+                .ignoresSafeArea(.all, edges: .top)
             VStack {
                 HStack {
                     Spacer()

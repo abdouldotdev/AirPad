@@ -18,6 +18,7 @@ targets:
       INFOPLIST_KEY_NSLocalNetworkUsageDescription: "AirPad needs local network to connect to Mac."
       INFOPLIST_KEY_NSCameraUsageDescription: "AirPad needs camera access to scan QR codes for pairing."
       INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+      INFOPLIST_KEY_UILaunchScreen_Generation: YES
 
   AirPadServer:
     type: application
