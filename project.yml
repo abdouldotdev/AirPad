@@ -27,6 +27,7 @@ targets:
     deploymentTarget: "13.0"
     sources:
       - Server/Sources/Server
+      - Server/Assets.xcassets
     settings:
       GENERATE_INFOPLIST_FILE: YES
       CURRENT_PROJECT_VERSION: 1
