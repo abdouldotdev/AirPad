@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-struct MacTrackApp: App {
+struct AirPadApp: App {
     var body: some Scene {
         WindowGroup {
             TrackpadView()

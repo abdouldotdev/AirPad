@@ -1,6 +1,6 @@
-# MacTrack (Native Remote Trackpad)
+# AirPad (Native Remote Trackpad)
 
-MacTrack is a zero-latency, 100% native remote trackpad and keyboard solution for macOS and iOS. It uses pure Swift and Apple's UDP `Network` framework to deliver real-time cursor movements.
+AirPad is a zero-latency, 100% native remote trackpad and keyboard solution for macOS and iOS. It uses pure Swift and Apple's UDP `Network` framework to deliver real-time cursor movements.
 
 ## Features
 - Ultra-low latency via UDP.

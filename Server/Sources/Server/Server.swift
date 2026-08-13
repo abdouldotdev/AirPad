@@ -30,7 +30,7 @@ class MouseServer {
             }
             
             listener?.start(queue: .main)
-            print("MacTrack Serveur démarré sur le port \(port). En attente de l'iPhone...")
+            print("AirPad Serveur démarré sur le port \(port). En attente de l'iPhone...")
             
         } catch {
             print("Erreur de démarrage du serveur: \(error)")
