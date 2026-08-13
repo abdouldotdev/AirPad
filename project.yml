@@ -14,7 +14,8 @@ targets:
       MARKETING_VERSION: 1.0
       PRODUCT_BUNDLE_IDENTIFIER: com.abdouldotdev.AirPadClient
       SWIFT_VERSION: 5.0
-      INFOPLIST_KEY_NSLocalNetworkUsageDescription: "AirPad a besoin du réseau local pour se connecter au Mac."
+      INFOPLIST_KEY_NSLocalNetworkUsageDescription: "AirPad needs local network to connect to Mac."
+      INFOPLIST_KEY_NSCameraUsageDescription: "AirPad needs camera access to scan QR codes for pairing."
       INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
 
   AirPadServer:

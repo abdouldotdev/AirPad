@@ -3,6 +3,27 @@ import Network
 import CoreGraphics
 import AppKit
 import ServiceManagement
+import CoreImage.CIFilterBuiltins
+
+// --- LOCALIZATION HELPER ---
+func T(_ en: String, _ fr: String) -> String {
+    let lang = Locale.current.language.languageCode?.identifier ?? "en"
+    return lang.hasPrefix("fr") ? fr : en
+}
+
+func generateQRCode(from string: String) -> NSImage? {
+    let context = CIContext()
+    let filter = CIFilter.qrCodeGenerator()
+    filter.message = Data(string.utf8)
+    if let outputImage = filter.outputImage {
+        let transform = CGAffineTransform(scaleX: 10, y: 10)
+        let scaledImage = outputImage.transformed(by: transform)
+        if let cgImage = context.createCGImage(scaledImage, from: scaledImage.extent) {
+            return NSImage(cgImage: cgImage, size: NSSize(width: scaledImage.extent.width, height: scaledImage.extent.height))
+        }
+    }
+    return nil
+}
 
 @main
 struct AirPadMacApp: App {
@@ -14,13 +35,13 @@ struct AirPadMacApp: App {
         }
         .windowStyle(.hiddenTitleBar)
         
-        MenuBarExtra(server.connectedDevice != nil ? "AirPad (Connecté)" : (server.isListening ? "AirPad (Attente)" : "AirPad"), systemImage: server.connectedDevice != nil ? "macbook.and.iphone" : "macbook") {
+        MenuBarExtra(server.connectedDevice != nil ? T("AirPad (Connected)", "AirPad (Connecté)") : (server.isListening ? T("AirPad (Waiting)", "AirPad (Attente)") : "AirPad"), systemImage: server.connectedDevice != nil ? "macbook.and.iphone" : "macbook") {
             VStack {
-                Button(server.isListening ? "Arrêter le serveur" : "Démarrer l'appairage") {
+                Button(server.isListening ? T("Stop Server", "Arrêter le serveur") : T("Start Pairing", "Démarrer l'appairage")) {
                     server.isListening ? server.stop() : server.start()
                 }
                 Divider()
-                Button("Quitter") {
+                Button(T("Quit", "Quitter")) {
                     NSApplication.shared.terminate(nil)
                 }
             }
@@ -50,7 +71,7 @@ struct MacMainView: View {
             VStack(spacing: 4) {
                 Text("AirPad")
                     .font(.system(size: 28, weight: .bold))
-                Text("Transformez votre iPhone en Trackpad & Clavier")
+                Text(T("Transform your iPhone into a Trackpad & Keyboard", "Transformez votre iPhone en Trackpad & Clavier"))
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
@@ -60,17 +81,27 @@ struct MacMainView: View {
             if server.isListening {
                 VStack(spacing: 12) {
                     if let ip = getLocalIPAddress() {
-                        VStack(spacing: 4) {
-                            Text("Entrez cette IP sur votre iPhone :")
-                                .font(.callout)
-                                .foregroundColor(.secondary)
+                        HStack(spacing: 20) {
+                            if let qr = generateQRCode(from: ip) {
+                                Image(nsImage: qr)
+                                    .resizable()
+                                    .interpolation(.none)
+                                    .frame(width: 100, height: 100)
+                                    .cornerRadius(8)
+                            }
                             
-                            Text(ip)
-                                .font(.system(size: 24, weight: .heavy, design: .monospaced))
-                                .padding(.horizontal, 16)
-                                .padding(.vertical, 8)
-                                .background(Color.blue.opacity(0.1))
-                                .cornerRadius(8)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(T("Scan QR or enter IP on iPhone:", "Scannez le QR ou entrez l'IP :"))
+                                    .font(.callout)
+                                    .foregroundColor(.secondary)
+                                
+                                Text(ip)
+                                    .font(.system(size: 24, weight: .heavy, design: .monospaced))
+                                    .padding(.horizontal, 16)
+                                    .padding(.vertical, 8)
+                                    .background(Color.blue.opacity(0.1))
+                                    .cornerRadius(8)
+                            }
                         }
                     }
                     
@@ -78,7 +109,7 @@ struct MacMainView: View {
                         HStack {
                             Image(systemName: "checkmark.circle.fill")
                                 .foregroundColor(.green)
-                            Text("Connecté à : \(device)")
+                            Text(T("Connected to: \(device)", "Connecté à : \(device)"))
                                 .font(.headline)
                         }
                         .padding(10)
@@ -87,13 +118,13 @@ struct MacMainView: View {
                     } else {
                         HStack {
                             ProgressView().scaleEffect(0.7)
-                            Text("En attente de connexion...")
+                            Text(T("Waiting for connection...", "En attente de connexion..."))
                                 .foregroundColor(.secondary)
                         }
                     }
                 }
             } else {
-                Text("Le serveur est inactif.")
+                Text(T("Server is inactive.", "Le serveur est inactif."))
                     .font(.headline)
                     .foregroundColor(.secondary)
                     .padding()
@@ -106,7 +137,7 @@ struct MacMainView: View {
                     server.start()
                 }
             }) {
-                Text(server.isListening ? "Arrêter le serveur" : "Démarrer l'appairage")
+                Text(server.isListening ? T("Stop Server", "Arrêter le serveur") : T("Start Pairing", "Démarrer l'appairage"))
                     .font(.headline)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 4)
@@ -117,28 +148,20 @@ struct MacMainView: View {
             
             Divider()
             
-            // Section Préférences
             VStack(alignment: .leading, spacing: 10) {
-                Text("Réglages").font(.headline)
+                Text(T("Settings", "Réglages")).font(.headline)
                 
-                Toggle("Lancer AirPad au démarrage du Mac", isOn: $launchAtLogin)
+                Toggle(T("Launch AirPad at Mac startup", "Lancer AirPad au démarrage du Mac"), isOn: $launchAtLogin)
                     .onChange(of: launchAtLogin) { newValue in
                         do {
-                            if newValue {
-                                try SMAppService.mainApp.register()
-                            } else {
-                                try SMAppService.mainApp.unregister()
-                            }
-                        } catch {
-                            print("Erreur SMAppService : \(error)")
-                        }
+                            if newValue { try SMAppService.mainApp.register() }
+                            else { try SMAppService.mainApp.unregister() }
+                        } catch { print("Erreur SMAppService : \(error)") }
                     }
                 
-                Toggle("Activer le serveur automatiquement au lancement", isOn: $autoStart)
+                Toggle(T("Start server automatically on launch", "Activer le serveur automatiquement au lancement"), isOn: $autoStart)
                     .onChange(of: autoStart) { newValue in
-                        if newValue && !server.isListening {
-                            server.start()
-                        }
+                        if newValue && !server.isListening { server.start() }
                     }
             }
             .font(.callout)
@@ -146,21 +169,15 @@ struct MacMainView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
         }
         .padding(30)
-        .frame(width: 400, height: 600)
+        .frame(width: 450, height: 600)
         .background(VisualEffectView().ignoresSafeArea())
         .onAppear {
-            // Synchronisation de l'état SMAppService
             launchAtLogin = SMAppService.mainApp.status == .enabled
-            
-            // Lancement automatique si configuré
-            if autoStart && !server.isListening {
-                server.start()
-            }
+            if autoStart && !server.isListening { server.start() }
         }
     }
 }
 
-// Effet de transparence "Mac" en fond
 struct VisualEffectView: NSViewRepresentable {
     func makeNSView(context: Context) -> NSVisualEffectView {
         let view = NSVisualEffectView()
@@ -171,7 +188,6 @@ struct VisualEffectView: NSViewRepresentable {
     }
     func updateNSView(_ nsView: NSVisualEffectView, context: Context) {}
 }
-
 
 final class MouseServer: ObservableObject, @unchecked Sendable {
     var listener: NWListener?

@@ -1,6 +1,13 @@
 import SwiftUI
 import Network
 import UIKit
+import AVFoundation
+
+// --- LOCALIZATION HELPER ---
+func T(_ en: String, _ fr: String) -> String {
+    let lang = Locale.current.language.languageCode?.identifier ?? "en"
+    return lang.hasPrefix("fr") ? fr : en
+}
 
 class NetworkClient: ObservableObject {
     private var connection: NWConnection?
@@ -108,23 +115,18 @@ struct AirPadView: View {
             Group {
                 if isLandscape {
                     HStack(spacing: 0) {
-                        trackpadZone
-                            .frame(width: geo.size.width * 0.45)
-                        keyboardZone
-                            .frame(width: geo.size.width * 0.55)
+                        trackpadZone.frame(width: geo.size.width * 0.45)
+                        keyboardZone.frame(width: geo.size.width * 0.55)
                     }
                 } else {
                     VStack(spacing: 0) {
-                        trackpadZone
-                            .frame(height: geo.size.height * 0.45)
-                        keyboardZone
-                            .frame(height: geo.size.height * 0.55)
+                        trackpadZone.frame(height: geo.size.height * 0.45)
+                        keyboardZone.frame(height: geo.size.height * 0.55)
                     }
                 }
             }
         }
-        .background(Color(white: 0.12).edgesIgnoringSafeArea(.all)) // Fond global
-        // Pas de ignoresSafeArea ici pour que le clavier ne se coupe pas sous le home indicator
+        .background(Color(white: 0.12).edgesIgnoringSafeArea(.all))
         .sheet(isPresented: $showSettings) {
             SettingsView(client: client, serverIP: $serverIP)
         }
@@ -132,7 +134,6 @@ struct AirPadView: View {
     }
 }
 
-// Trackpad UIKit
 struct TrackpadUIKitView: UIViewRepresentable {
     let client: NetworkClient
     
@@ -273,6 +274,64 @@ struct PhysicalKeyView: View {
     }
 }
 
+// --- QR SCANNER ---
+struct QRCodeScannerView: UIViewControllerRepresentable {
+    class Coordinator: NSObject, AVCaptureMetadataOutputObjectsDelegate {
+        var parent: QRCodeScannerView
+        var didFindCode: Bool = false
+        
+        init(parent: QRCodeScannerView) { self.parent = parent }
+        
+        func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
+            guard !didFindCode else { return }
+            
+            if let metadataObject = metadataObjects.first as? AVMetadataMachineReadableCodeObject,
+               let stringValue = metadataObject.stringValue {
+                // Ensure we only process IP addresses (rudimentary check)
+                if stringValue.contains(".") {
+                    didFindCode = true
+                    DispatchQueue.main.async {
+                        self.parent.didFindCode(stringValue)
+                    }
+                }
+            }
+        }
+    }
+    
+    var didFindCode: (String) -> Void
+    
+    func makeCoordinator() -> Coordinator { return Coordinator(parent: self) }
+    
+    func makeUIViewController(context: Context) -> UIViewController {
+        let viewController = UIViewController()
+        viewController.view.backgroundColor = .black
+        
+        let session = AVCaptureSession()
+        guard let videoCaptureDevice = AVCaptureDevice.default(for: .video) else { return viewController }
+        guard let videoInput = try? AVCaptureDeviceInput(device: videoCaptureDevice) else { return viewController }
+        
+        if (session.canAddInput(videoInput)) { session.addInput(videoInput) } else { return viewController }
+        
+        let metadataOutput = AVCaptureMetadataOutput()
+        if (session.canAddOutput(metadataOutput)) {
+            session.addOutput(metadataOutput)
+            metadataOutput.setMetadataObjectsDelegate(context.coordinator, queue: DispatchQueue.main)
+            metadataOutput.metadataObjectTypes = [.qr]
+        } else { return viewController }
+        
+        let previewLayer = AVCaptureVideoPreviewLayer(session: session)
+        previewLayer.frame = UIScreen.main.bounds
+        previewLayer.videoGravity = .resizeAspectFill
+        viewController.view.layer.addSublayer(previewLayer)
+        
+        DispatchQueue.global(qos: .userInitiated).async { session.startRunning() }
+        
+        return viewController
+    }
+    
+    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
+}
+
 struct SettingsView: View {
     @ObservedObject var client: NetworkClient
     @Binding var serverIP: String
@@ -281,18 +340,29 @@ struct SettingsView: View {
     var body: some View {
         NavigationView {
             Form {
-                Section(header: Text("Connexion au Mac")) {
-                    TextField("IP Locale (ex: 192.168.1.50)", text: $serverIP)
+                Section(header: Text(T("Scan QR Code", "Scanner le QR Code"))) {
+                    QRCodeScannerView { scannedIP in
+                        serverIP = scannedIP
+                        UINotificationFeedbackGenerator().notificationOccurred(.success)
+                        client.connect(to: serverIP)
+                        presentationMode.wrappedValue.dismiss()
+                    }
+                    .frame(height: 250)
+                    .cornerRadius(12)
+                    .padding(.vertical, 8)
+                }
+                
+                Section(header: Text(T("Manual Entry", "Saisie Manuelle"))) {
+                    TextField(T("Mac IP Address (e.g. 192.168.1.50)", "IP du Mac (ex: 192.168.1.50)"), text: $serverIP)
                         .keyboardType(.decimalPad)
-                    Button("Connecter") {
+                    Button(T("Connect", "Connecter")) {
                         client.connect(to: serverIP)
                         UINotificationFeedbackGenerator().notificationOccurred(.success)
                         presentationMode.wrappedValue.dismiss()
                     }
                 }
             }
-            .navigationTitle("Réglages AirPad")
+            .navigationTitle(T("AirPad Settings", "Réglages AirPad"))
         }
-        .presentationDetents([.medium])
     }
 }
