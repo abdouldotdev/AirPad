@@ -84,25 +84,128 @@ struct AirPadView: View {
         MacKey(label: "⌘", code: 54, widthMultiplier: 1.2, isDark: true), MacKey(label: "⌥", code: 61, isDark: true)
     ]
     
-    var trackpadZone: some View {
+    @State private var showTrackpad = false
+    @State private var isBlinking = false
+    
+    var body: some View {
         ZStack {
-            TrackpadUIKitView(client: client)
-                .ignoresSafeArea(.all, edges: .top)
-            VStack {
+            Color(white: 0.12).ignoresSafeArea()
+            
+            VStack(spacing: 0) {
+                // TOP BAR
                 HStack {
-                    Spacer()
                     Button(action: { showSettings.toggle() }) {
-                        Image(systemName: client.isConnected ? "macbook.and.iphone" : "wifi.slash")
-                            .foregroundColor(client.isConnected ? .white.opacity(0.8) : .red)
+                        Image(systemName: "gearshape.fill")
+                            .foregroundColor(.white.opacity(0.8))
                             .padding(12)
                             .background(Color.black.opacity(0.4))
                             .clipShape(Circle())
                     }
-                    .padding()
+                    
+                    Spacer()
+                    
+                    Button(action: { if !client.isConnected { showSettings.toggle() } }) {
+                        HStack(spacing: 8) {
+                            Circle()
+                                .fill(client.isConnected ? Color.green : Color.red)
+                                .frame(width: 8, height: 8)
+                                .opacity(client.isConnected ? 1.0 : (isBlinking ? 0.2 : 1.0))
+                            
+                            Text(client.isConnected ? T("Connected", "Connecté") : T("Not Connected", "Non Connecté"))
+                                .font(.caption.bold())
+                                .foregroundColor(client.isConnected ? .green : .red)
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .background(Color.black.opacity(0.4))
+                        .cornerRadius(20)
+                    }
+                    
+                    Spacer()
+                    
+                    Image(systemName: "gearshape.fill").padding(12).opacity(0)
                 }
+                .padding(.horizontal)
+                .padding(.top, 8)
+                
                 Spacer()
+                
+                // MAIN CONTENT
+                ZStack {
+                    keyboardZone
+                        .opacity(showTrackpad ? 0 : 1)
+                        .scaleEffect(showTrackpad ? 0.95 : 1.0)
+                    
+                    if showTrackpad {
+                        macTrackpadZone
+                            .transition(.move(edge: .bottom))
+                            .zIndex(1)
+                    }
+                }
+                .animation(.spring(response: 0.4, dampingFraction: 0.8), value: showTrackpad)
+                
+                // DOCK HANDLE
+                Button(action: { showTrackpad.toggle() }) {
+                    ZStack {
+                        Color(white: 0.1).ignoresSafeArea(edges: .bottom)
+                        Capsule()
+                            .fill(Color.white.opacity(0.3))
+                            .frame(width: 130, height: 5)
+                            .padding(.vertical, 16)
+                    }
+                    .frame(height: 40)
+                }
             }
         }
+        .onAppear {
+            client.connect(to: serverIP)
+            withAnimation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true)) {
+                isBlinking = true
+            }
+        }
+        .sheet(isPresented: $showSettings) {
+            SettingsView(client: client, serverIP: $serverIP)
+        }
+    }
+    
+    var macTrackpadZone: some View {
+        VStack(spacing: 0) {
+            TrackpadUIKitView(client: client)
+                .frame(maxHeight: .infinity)
+            
+            Divider().background(Color.black.opacity(0.1))
+            
+            HStack(spacing: 0) {
+                Button(action: {
+                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                    client.sendClick()
+                }) {
+                    Text(T("Left Click", "Clic Gauche"))
+                        .font(.footnote.bold())
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
+                
+                Divider().background(Color.black.opacity(0.1))
+                
+                Button(action: {
+                    UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                    client.sendRightClick()
+                }) {
+                    Text(T("Right Click", "Clic Droit"))
+                        .font(.footnote.bold())
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
+            }
+            .frame(height: 60)
+        }
+        .background(
+            LinearGradient(colors: [Color(white: 0.9), Color(white: 0.82)], startPoint: .top, endPoint: .bottom)
+        )
+        .foregroundColor(.black.opacity(0.7))
+        .cornerRadius(24)
+        .overlay(RoundedRectangle(cornerRadius: 24).stroke(Color.white.opacity(0.6), lineWidth: 1))
+        .shadow(color: .black.opacity(0.4), radius: 15, y: 8)
+        .padding(16)
     }
     
     var keyboardZone: some View {
@@ -110,8 +213,8 @@ struct AirPadView: View {
             let availableWidth = geo.size.width - 16
             let baseKeyWidth = max(0, (availableWidth - (9 * 6)) / 10)
             
-            ZStack {
-                Color(white: 0.18)
+            VStack {
+                Spacer()
                 VStack(spacing: 8) {
                     if advancedMode {
                         KeyboardRow(keys: rowFn, client: client).frame(height: baseKeyWidth * 0.8)
@@ -123,33 +226,10 @@ struct AirPadView: View {
                     KeyboardRow(keys: row4, client: client).frame(height: baseKeyWidth)
                 }
                 .padding(8)
+                .background(Color(white: 0.18).cornerRadius(16))
             }
         }
-    }
-    
-    var body: some View {
-        GeometryReader { geo in
-            let isLandscape = geo.size.width > geo.size.height
-            
-            Group {
-                if isLandscape {
-                    HStack(spacing: 0) {
-                        trackpadZone.frame(width: geo.size.width * 0.45)
-                        keyboardZone.frame(width: geo.size.width * 0.55)
-                    }
-                } else {
-                    VStack(spacing: 0) {
-                        trackpadZone.frame(height: geo.size.height * 0.45)
-                        keyboardZone.frame(height: geo.size.height * 0.55)
-                    }
-                }
-            }
-        }
-        .background(Color(white: 0.12).edgesIgnoringSafeArea(.all))
-        .sheet(isPresented: $showSettings) {
-            SettingsView(client: client, serverIP: $serverIP)
-        }
-        .onAppear { client.connect(to: serverIP) }
+        .padding(.horizontal, 8)
     }
 }
 
@@ -158,7 +238,7 @@ struct TrackpadUIKitView: UIViewRepresentable {
     
     func makeUIView(context: Context) -> UIView {
         let view = UIView()
-        view.backgroundColor = UIColor(white: 0.12, alpha: 1.0)
+        view.backgroundColor = .clear
         
         let pan = UIPanGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handlePan(_:)))
         pan.maximumNumberOfTouches = 1
