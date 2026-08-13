@@ -552,7 +552,7 @@ struct SettingsView: View {
                         .cornerRadius(12)
                     
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(T("Tracking Speed (DPI)", "Vitesse du curseur (DPI)"))
+                        Text(T("Tracking Speed", "Vitesse du curseur"))
                             .font(.subheadline)
                         Slider(value: $trackingSpeed, in: 0.2...4.0, step: 0.1)
                             .accentColor(.blue)
