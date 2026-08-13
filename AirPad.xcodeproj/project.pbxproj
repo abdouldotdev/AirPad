@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		05957752250D9D066F5CDC20 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F57A0E6C2693DFD46FF77CA5 /* Assets.xcassets */; };
 		62C9FD500F79DA9B5B27DD4D /* AirPadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E61569FF366665859E0855F /* AirPadView.swift */; };
 		C5FA355DCCB48377595DEE5A /* AirPadApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB77FB4CC19AAE1CDADC28E1 /* AirPadApp.swift */; };
 		DE63B14CBD86E8E77DD59F59 /* Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99582E017A94B2D80BA60854 /* Server.swift */; };
@@ -18,6 +19,7 @@
 		6E61569FF366665859E0855F /* AirPadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AirPadView.swift; sourceTree = "<group>"; };
 		99582E017A94B2D80BA60854 /* Server.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Server.swift; sourceTree = "<group>"; };
 		CB77FB4CC19AAE1CDADC28E1 /* AirPadApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AirPadApp.swift; sourceTree = "<group>"; };
+		F57A0E6C2693DFD46FF77CA5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -35,6 +37,7 @@
 			children = (
 				CB77FB4CC19AAE1CDADC28E1 /* AirPadApp.swift */,
 				6E61569FF366665859E0855F /* AirPadView.swift */,
+				F57A0E6C2693DFD46FF77CA5 /* Assets.xcassets */,
 			);
 			path = Client;
 			sourceTree = "<group>";
@@ -65,6 +68,7 @@
 			buildConfigurationList = EA09559CA91F80A26904D6ED /* Build configuration list for PBXNativeTarget "AirPadClient" */;
 			buildPhases = (
 				0F615AD60C3E41B7E3FEEB9A /* Sources */,
+				8D032FC2CCAEDBF7CC78A3BF /* Resources */,
 			);
 			buildRules = (
 			);
@@ -130,6 +134,17 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		8D032FC2CCAEDBF7CC78A3BF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				05957752250D9D066F5CDC20 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		0F615AD60C3E41B7E3FEEB9A /* Sources */ = {
@@ -245,7 +260,10 @@
 				INFOPLIST_KEY_NSCameraUsageDescription = "AirPad needs camera access to scan QR codes for pairing.";
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "AirPad needs local network to connect to Mac.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen = {
+					UIColorName = SplashBackground;
+					UIImageName = SplashIcon;
+				};
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -270,7 +288,10 @@
 				INFOPLIST_KEY_NSCameraUsageDescription = "AirPad needs camera access to scan QR codes for pairing.";
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "AirPad needs local network to connect to Mac.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen = {
+					UIColorName = SplashBackground;
+					UIImageName = SplashIcon;
+				};
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
