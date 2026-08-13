@@ -8,47 +8,20 @@ struct AirPadMacApp: App {
     @StateObject private var server = MouseServer()
     
     var body: some Scene {
+        // Fenêtre classique pour que l'UI soit bien visible au centre de l'écran
+        WindowGroup {
+            MacMainView(server: server)
+        }
+        .windowStyle(.hiddenTitleBar)
+        
+        // On garde l'icône dans la barre de menu en bonus
         MenuBarExtra(server.connectedDevice != nil ? "AirPad (Connecté)" : (server.isListening ? "AirPad (Attente)" : "AirPad"), systemImage: server.connectedDevice != nil ? "macbook.and.iphone" : "macbook") {
-            VStack(alignment: .leading) {
-                Text("AirPad Serveur")
-                    .font(.headline)
-                
-                Divider()
-                
-                if server.isListening {
-                    if let device = server.connectedDevice {
-                        Text("✅ Connecté à :")
-                        Text(device)
-                            .font(.system(size: 14, weight: .bold))
-                            .foregroundColor(.green)
-                    } else {
-                        Text("⏳ En attente de connexion...")
-                            .foregroundColor(.gray)
-                        if let ip = getLocalIPAddress() {
-                            Text("Entrez cette IP sur l'iPhone :")
-                                .font(.caption)
-                            Text(ip)
-                                .font(.system(.body, design: .monospaced))
-                        }
-                    }
-                } else {
-                    Text("🔴 Serveur inactif")
-                        .foregroundColor(.gray)
-                }
-                
-                Divider()
-                
+            VStack {
                 Button(server.isListening ? "Arrêter le serveur" : "Démarrer l'appairage") {
-                    if server.isListening {
-                        server.stop()
-                    } else {
-                        server.start()
-                    }
+                    server.isListening ? server.stop() : server.start()
                 }
-                
                 Divider()
-                
-                Button("Quitter AirPad") {
+                Button("Quitter") {
                     NSApplication.shared.terminate(nil)
                 }
             }
@@ -57,9 +30,113 @@ struct AirPadMacApp: App {
     }
 }
 
+struct MacMainView: View {
+    @ObservedObject var server: MouseServer
+    
+    var body: some View {
+        VStack(spacing: 24) {
+            ZStack {
+                Circle()
+                    .fill(server.isListening ? Color.blue.opacity(0.1) : Color.gray.opacity(0.1))
+                    .frame(width: 120, height: 120)
+                
+                Image(systemName: server.connectedDevice != nil ? "iphone.radiowaves.left.and.right" : "macbook.and.iphone")
+                    .font(.system(size: 50))
+                    .foregroundColor(server.isListening ? .blue : .gray)
+            }
+            
+            VStack(spacing: 8) {
+                Text("AirPad")
+                    .font(.system(size: 32, weight: .bold))
+                
+                Text("Transformez votre iPhone en Trackpad & Clavier")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            }
+            
+            Divider().padding(.vertical, 8)
+            
+            if server.isListening {
+                VStack(spacing: 16) {
+                    if let ip = getLocalIPAddress() {
+                        VStack(spacing: 4) {
+                            Text("Entrez cette IP sur votre iPhone :")
+                                .font(.callout)
+                                .foregroundColor(.secondary)
+                            
+                            Text(ip)
+                                .font(.system(size: 28, weight: .heavy, design: .monospaced))
+                                .padding(.horizontal, 20)
+                                .padding(.vertical, 10)
+                                .background(Color.blue.opacity(0.1))
+                                .cornerRadius(12)
+                        }
+                    }
+                    
+                    if let device = server.connectedDevice {
+                        HStack {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundColor(.green)
+                            Text("Connecté à : \(device)")
+                                .font(.headline)
+                        }
+                        .padding()
+                        .background(Color.green.opacity(0.1))
+                        .cornerRadius(10)
+                    } else {
+                        HStack {
+                            ProgressView().scaleEffect(0.7)
+                            Text("En attente de connexion...")
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                }
+            } else {
+                Text("Le serveur est inactif.")
+                    .font(.headline)
+                    .foregroundColor(.secondary)
+                    .padding()
+            }
+            
+            Spacer()
+            
+            Button(action: {
+                if server.isListening {
+                    server.stop()
+                } else {
+                    server.start()
+                }
+            }) {
+                Text(server.isListening ? "Arrêter le serveur" : "Démarrer l'appairage")
+                    .font(.headline)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 8)
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(server.isListening ? .red : .blue)
+            .controlSize(.large)
+        }
+        .padding(40)
+        .frame(width: 450, height: 500)
+        .background(VisualEffectView().ignoresSafeArea())
+    }
+}
+
+// Effet de transparence "Mac" en fond
+struct VisualEffectView: NSViewRepresentable {
+    func makeNSView(context: Context) -> NSVisualEffectView {
+        let view = NSVisualEffectView()
+        view.material = .sidebar
+        view.blendingMode = .behindWindow
+        view.state = .active
+        return view
+    }
+    func updateNSView(_ nsView: NSVisualEffectView, context: Context) {}
+}
+
+
 final class MouseServer: ObservableObject, @unchecked Sendable {
     var listener: NWListener?
-    
     @Published var connectedDevice: String? = nil
     @Published var isListening: Bool = false
     
@@ -68,7 +145,6 @@ final class MouseServer: ObservableObject, @unchecked Sendable {
         return event.location
     }
     
-    // On ne démarre plus le serveur à l'initialisation
     init() {}
     
     func start(port: NWEndpoint.Port = 8080) {
@@ -83,9 +159,7 @@ final class MouseServer: ObservableObject, @unchecked Sendable {
                 self.isListening = true
                 self.connectedDevice = nil
             }
-        } catch {
-            print("Erreur: \(error)")
-        }
+        } catch { print("Erreur: \(error)") }
     }
     
     func stop() {
@@ -116,26 +190,18 @@ final class MouseServer: ObservableObject, @unchecked Sendable {
         case "INIT":
             if parts.count >= 2 {
                 let deviceName = parts.dropFirst().joined(separator: ":")
-                DispatchQueue.main.async {
-                    self.connectedDevice = deviceName
-                }
+                DispatchQueue.main.async { self.connectedDevice = deviceName }
             }
         case "M":
-            if parts.count == 3, let dx = Double(parts[1]), let dy = Double(parts[2]) {
-                moveMouse(dx: dx, dy: dy)
-            }
+            if parts.count == 3, let dx = Double(parts[1]), let dy = Double(parts[2]) { moveMouse(dx: dx, dy: dy) }
         case "C":
             clickMouse()
         case "R":
             rightClick()
         case "S":
-            if parts.count == 3, let dx = Double(parts[1]), let dy = Double(parts[2]) {
-                scrollMouse(dx: dx, dy: dy)
-            }
+            if parts.count == 3, let dx = Double(parts[1]), let dy = Double(parts[2]) { scrollMouse(dx: dx, dy: dy) }
         case "K":
-            if parts.count == 3, let code = UInt16(parts[1]), let state = Int(parts[2]) {
-                pressKey(keyCode: code, down: state == 1)
-            }
+            if parts.count == 3, let code = UInt16(parts[1]), let state = Int(parts[2]) { pressKey(keyCode: code, down: state == 1) }
         default:
             break
         }
@@ -145,40 +211,31 @@ final class MouseServer: ObservableObject, @unchecked Sendable {
         let event = CGEvent(keyboardEventSource: nil, virtualKey: CGKeyCode(keyCode), keyDown: down)
         event?.post(tap: .cghidEventTap)
     }
-    
     private func moveMouse(dx: Double, dy: Double) {
-        let sensitivity = 1.5
         var location = currentMouseLocation
-        location.x += CGFloat(dx * sensitivity)
-        location.y += CGFloat(dy * sensitivity)
+        location.x += CGFloat(dx * 1.5)
+        location.y += CGFloat(dy * 1.5)
         let moveEvent = CGEvent(mouseEventSource: nil, mouseType: .mouseMoved, mouseCursorPosition: location, mouseButton: .left)
         moveEvent?.post(tap: .cghidEventTap)
     }
-    
     private func clickMouse() {
         let location = currentMouseLocation
         let downEvent = CGEvent(mouseEventSource: nil, mouseType: .leftMouseDown, mouseCursorPosition: location, mouseButton: .left)
         let upEvent = CGEvent(mouseEventSource: nil, mouseType: .leftMouseUp, mouseCursorPosition: location, mouseButton: .left)
-        downEvent?.post(tap: .cghidEventTap)
-        upEvent?.post(tap: .cghidEventTap)
+        downEvent?.post(tap: .cghidEventTap); upEvent?.post(tap: .cghidEventTap)
     }
-    
     private func rightClick() {
         let location = currentMouseLocation
         let downEvent = CGEvent(mouseEventSource: nil, mouseType: .rightMouseDown, mouseCursorPosition: location, mouseButton: .right)
         let upEvent = CGEvent(mouseEventSource: nil, mouseType: .rightMouseUp, mouseCursorPosition: location, mouseButton: .right)
-        downEvent?.post(tap: .cghidEventTap)
-        upEvent?.post(tap: .cghidEventTap)
+        downEvent?.post(tap: .cghidEventTap); upEvent?.post(tap: .cghidEventTap)
     }
-    
     private func scrollMouse(dx: Double, dy: Double) {
-        let sensitivity = 3.0
-        let event = CGEvent(scrollWheelEvent2Source: nil, units: .pixel, wheelCount: 2, wheel1: Int32(dy * sensitivity), wheel2: Int32(dx * sensitivity), wheel3: 0)
+        let event = CGEvent(scrollWheelEvent2Source: nil, units: .pixel, wheelCount: 2, wheel1: Int32(dy * 3.0), wheel2: Int32(dx * 3.0), wheel3: 0)
         event?.post(tap: .cghidEventTap)
     }
 }
 
-// Helper pour afficher l'IP locale afin de faciliter la configuration
 func getLocalIPAddress() -> String? {
     var address: String?
     var ifaddr: UnsafeMutablePointer<ifaddrs>?
