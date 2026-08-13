@@ -355,6 +355,7 @@ struct SettingsView: View {
     @ObservedObject var client: NetworkClient
     @Binding var serverIP: String
     @Environment(\.presentationMode) var presentationMode
+    @AppStorage("advancedMode") private var advancedMode = false
     
     var body: some View {
         NavigationView {
@@ -405,7 +406,7 @@ struct SettingsView: View {
                         .font(.headline)
                         .foregroundColor(.secondary)
                     
-                    Toggle(T("Advanced Mode (F1-F12 Keys)", "Mode Avancé (Touches F1-F12)"), isOn: AppStorage(wrappedValue: false, "advancedMode"))
+                    Toggle(T("Advanced Mode (F1-F12 Keys)", "Mode Avancé (Touches F1-F12)"), isOn: $advancedMode)
                         .padding()
                         .background(Color.gray.opacity(0.1))
                         .cornerRadius(12)
