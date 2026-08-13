@@ -50,6 +50,7 @@ struct MacKey: Identifiable {
 struct AirPadView: View {
     @StateObject private var client = NetworkClient()
     @AppStorage("serverIP") private var serverIP: String = "192.168.1.50"
+    @AppStorage("advancedMode") private var advancedMode = false
     @State private var showSettings = false
     
     let rowFn = [
@@ -105,17 +106,24 @@ struct AirPadView: View {
     }
     
     var keyboardZone: some View {
-        ZStack {
-            Color(white: 0.18)
-            VStack(spacing: 8) {
-                KeyboardRow(keys: rowFn, client: client).frame(maxHeight: .infinity)
-                KeyboardRow(keys: rowNum, client: client).frame(maxHeight: .infinity)
-                KeyboardRow(keys: row1, client: client).frame(maxHeight: .infinity)
-                KeyboardRow(keys: row2, client: client).frame(maxHeight: .infinity)
-                KeyboardRow(keys: row3, client: client).frame(maxHeight: .infinity)
-                KeyboardRow(keys: row4, client: client).frame(maxHeight: .infinity)
+        GeometryReader { geo in
+            let availableWidth = geo.size.width - 16
+            let baseKeyWidth = max(0, (availableWidth - (9 * 6)) / 10)
+            
+            ZStack {
+                Color(white: 0.18)
+                VStack(spacing: 8) {
+                    if advancedMode {
+                        KeyboardRow(keys: rowFn, client: client).frame(height: baseKeyWidth * 0.8)
+                    }
+                    KeyboardRow(keys: rowNum, client: client).frame(height: baseKeyWidth)
+                    KeyboardRow(keys: row1, client: client).frame(height: baseKeyWidth)
+                    KeyboardRow(keys: row2, client: client).frame(height: baseKeyWidth)
+                    KeyboardRow(keys: row3, client: client).frame(height: baseKeyWidth)
+                    KeyboardRow(keys: row4, client: client).frame(height: baseKeyWidth)
+                }
+                .padding(8)
             }
-            .padding(8)
         }
     }
     
@@ -390,6 +398,17 @@ struct SettingsView: View {
                         }
                         .buttonStyle(.borderedProminent)
                     }
+                }
+                
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(T("Preferences", "Préférences"))
+                        .font(.headline)
+                        .foregroundColor(.secondary)
+                    
+                    Toggle(T("Advanced Mode (F1-F12 Keys)", "Mode Avancé (Touches F1-F12)"), isOn: AppStorage(wrappedValue: false, "advancedMode"))
+                        .padding()
+                        .background(Color.gray.opacity(0.1))
+                        .cornerRadius(12)
                 }
                 
                 Spacer()
