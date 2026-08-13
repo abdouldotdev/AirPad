@@ -11,7 +11,7 @@ struct Server {
     }
 }
 
-class MouseServer {
+final class MouseServer: @unchecked Sendable {
     var listener: NWListener?
     
     var currentMouseLocation: CGPoint {
