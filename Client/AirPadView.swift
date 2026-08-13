@@ -189,7 +189,7 @@ struct AirPadView: View {
                     let keyboardHeight = max(0, geo.size.height * (1.0 - clampedRatio) - 40)
                     
                     VStack(spacing: 0) {
-                        macTrackpadZone
+                        macTrackpadZone(height: trackpadHeight)
                             .frame(height: trackpadHeight)
                             .clipped()
                             .opacity(trackpadHeight > 50 ? 1 : 0)
@@ -233,35 +233,37 @@ struct AirPadView: View {
         }
     }
     
-    var macTrackpadZone: some View {
+    func macTrackpadZone(height: CGFloat) -> some View {
         VStack(spacing: 0) {
             TrackpadUIKitView(client: client, trackingSpeed: trackingSpeed)
                 .frame(maxHeight: .infinity)
             
-            Divider().background(Color.black.opacity(0.1))
-            
-            HStack(spacing: 0) {
-                Button(action: {
-                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                    client.sendClick()
-                }) {
-                    Text(T("Left Click", "Clic Gauche"))
-                        .font(.footnote.bold())
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                }
-                
+            if height > 200 {
                 Divider().background(Color.black.opacity(0.1))
                 
-                Button(action: {
-                    UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                    client.sendRightClick()
-                }) {
-                    Text(T("Right Click", "Clic Droit"))
-                        .font(.footnote.bold())
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                HStack(spacing: 0) {
+                    Button(action: {
+                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                        client.sendClick()
+                    }) {
+                        Text(T("Left Click", "Clic Gauche"))
+                            .font(.footnote.bold())
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    }
+                    
+                    Divider().background(Color.black.opacity(0.1))
+                    
+                    Button(action: {
+                        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                        client.sendRightClick()
+                    }) {
+                        Text(T("Right Click", "Clic Droit"))
+                            .font(.footnote.bold())
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    }
                 }
+                .frame(height: 60)
             }
-            .frame(height: 60)
         }
         .background(
             LinearGradient(colors: [Color(white: 0.9), Color(white: 0.82)], startPoint: .top, endPoint: .bottom)
