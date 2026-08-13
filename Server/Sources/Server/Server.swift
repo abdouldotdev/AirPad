@@ -1,39 +1,65 @@
-import Foundation
+import SwiftUI
 import Network
 import CoreGraphics
+import AppKit
 
 @main
-struct Server {
-    static func main() {
-        let server = MouseServer()
-        server.start()
-        RunLoop.main.run()
+struct AirPadMacApp: App {
+    @StateObject private var server = MouseServer()
+    
+    var body: some Scene {
+        MenuBarExtra(server.connectedDevice == nil ? "AirPad (Attente)" : "AirPad", systemImage: "macbook.and.iphone") {
+            VStack(alignment: .leading) {
+                Text("AirPad Serveur")
+                    .font(.headline)
+                
+                Divider()
+                
+                if let device = server.connectedDevice {
+                    Text("✅ Connecté à :")
+                    Text(device)
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundColor(.green)
+                } else {
+                    Text("⏳ En attente de l'iPhone...")
+                        .foregroundColor(.gray)
+                }
+                
+                Divider()
+                
+                Button("Quitter AirPad") {
+                    NSApplication.shared.terminate(nil)
+                }
+            }
+        }
+        .menuBarExtraStyle(.menu)
     }
 }
 
-final class MouseServer: @unchecked Sendable {
+final class MouseServer: ObservableObject, @unchecked Sendable {
     var listener: NWListener?
+    
+    @Published var connectedDevice: String? = nil
     
     var currentMouseLocation: CGPoint {
         guard let event = CGEvent(source: nil) else { return .zero }
         return event.location
     }
     
+    init() {
+        start()
+    }
+    
     func start(port: NWEndpoint.Port = 8080) {
         do {
             listener = try NWListener(using: .udp, on: port)
-            
             listener?.newConnectionHandler = { [weak self] connection in
-                print("Nouvelle connexion entrante: \(connection.endpoint)")
                 connection.start(queue: .global(qos: .userInteractive))
                 self?.receiveLoop(on: connection)
             }
-            
             listener?.start(queue: .main)
-            print("AirPad Serveur démarré sur le port \(port). En attente de l'iPhone...")
-            
         } catch {
-            print("Erreur de démarrage du serveur: \(error)")
+            print("Erreur: \(error)")
         }
     }
     
@@ -42,7 +68,6 @@ final class MouseServer: @unchecked Sendable {
             if let data = data, let message = String(data: data, encoding: .utf8) {
                 self?.processCommand(message)
             }
-            
             if error == nil {
                 self?.receiveLoop(on: connection)
             }
@@ -54,19 +79,26 @@ final class MouseServer: @unchecked Sendable {
         guard let action = parts.first else { return }
         
         switch action {
-        case "M": // M:dx:dy (Move Mouse)
+        case "INIT": // INIT:DeviceName
+            if parts.count >= 2 {
+                let deviceName = parts.dropFirst().joined(separator: ":")
+                DispatchQueue.main.async {
+                    self.connectedDevice = deviceName
+                }
+            }
+        case "M": // M:dx:dy
             if parts.count == 3, let dx = Double(parts[1]), let dy = Double(parts[2]) {
                 moveMouse(dx: dx, dy: dy)
             }
-        case "C": // C:1 (Left Click)
+        case "C": // C:1
             clickMouse()
-        case "R": // R:1 (Right Click)
+        case "R": // R:1
             rightClick()
-        case "S": // S:dx:dy (Scroll)
+        case "S": // S:dx:dy
             if parts.count == 3, let dx = Double(parts[1]), let dy = Double(parts[2]) {
                 scrollMouse(dx: dx, dy: dy)
             }
-        case "K": // K:keycode:state (Key Press)
+        case "K": // K:code:state
             if parts.count == 3, let code = UInt16(parts[1]), let state = Int(parts[2]) {
                 pressKey(keyCode: code, down: state == 1)
             }
@@ -85,7 +117,6 @@ final class MouseServer: @unchecked Sendable {
         var location = currentMouseLocation
         location.x += CGFloat(dx * sensitivity)
         location.y += CGFloat(dy * sensitivity)
-        
         let moveEvent = CGEvent(mouseEventSource: nil, mouseType: .mouseMoved, mouseCursorPosition: location, mouseButton: .left)
         moveEvent?.post(tap: .cghidEventTap)
     }

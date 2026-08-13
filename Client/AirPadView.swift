@@ -14,6 +14,9 @@ class NetworkClient: ObservableObject {
         connection?.stateUpdateHandler = { [weak self] state in
             DispatchQueue.main.async {
                 self?.isConnected = (state == .ready)
+                if state == .ready {
+                    self?.send("INIT:\(UIDevice.current.name)")
+                }
             }
         }
         connection?.start(queue: queue)
