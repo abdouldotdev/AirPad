@@ -339,30 +339,61 @@ struct SettingsView: View {
     
     var body: some View {
         NavigationView {
-            Form {
-                Section(header: Text(T("Scan QR Code", "Scanner le QR Code"))) {
+            VStack(spacing: 24) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(T("Scan Mac QR Code", "Scanner le QR Code du Mac"))
+                        .font(.headline)
+                        .foregroundColor(.secondary)
+                    
                     QRCodeScannerView { scannedIP in
                         serverIP = scannedIP
                         UINotificationFeedbackGenerator().notificationOccurred(.success)
                         client.connect(to: serverIP)
                         presentationMode.wrappedValue.dismiss()
                     }
-                    .frame(height: 250)
+                    .frame(height: 180)
                     .cornerRadius(12)
-                    .padding(.vertical, 8)
+                    .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.gray.opacity(0.3), lineWidth: 1))
                 }
                 
-                Section(header: Text(T("Manual Entry", "Saisie Manuelle"))) {
-                    TextField(T("Mac IP Address (e.g. 192.168.1.50)", "IP du Mac (ex: 192.168.1.50)"), text: $serverIP)
-                        .keyboardType(.decimalPad)
-                    Button(T("Connect", "Connecter")) {
-                        client.connect(to: serverIP)
-                        UINotificationFeedbackGenerator().notificationOccurred(.success)
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(T("Manual Entry", "Saisie Manuelle de l'IP"))
+                        .font(.headline)
+                        .foregroundColor(.secondary)
+                    
+                    HStack {
+                        TextField(T("e.g. 192.168.1.50", "ex: 192.168.1.50"), text: $serverIP)
+                            .keyboardType(.decimalPad)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .frame(height: 44)
+                        
+                        Button(action: {
+                            client.connect(to: serverIP)
+                            UINotificationFeedbackGenerator().notificationOccurred(.success)
+                            presentationMode.wrappedValue.dismiss()
+                        }) {
+                            Text(T("Connect", "Connecter"))
+                                .bold()
+                                .frame(height: 44)
+                                .padding(.horizontal, 12)
+                        }
+                        .buttonStyle(.borderedProminent)
+                    }
+                }
+                
+                Spacer()
+            }
+            .padding(24)
+            .navigationTitle(T("AirPad Settings", "Réglages AirPad"))
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(T("Close", "Fermer")) {
                         presentationMode.wrappedValue.dismiss()
                     }
                 }
             }
-            .navigationTitle(T("AirPad Settings", "Réglages AirPad"))
         }
+        .presentationDetents([.fraction(0.65), .large])
     }
 }
