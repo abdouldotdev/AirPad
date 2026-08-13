@@ -58,7 +58,10 @@ struct AirPadView: View {
     @AppStorage("advancedMode") private var advancedMode = false
     @AppStorage("keyboardLayout") private var keyboardLayout = "QWERTY"
     @AppStorage("trackingSpeed") private var trackingSpeed: Double = 1.0
+    @AppStorage("trackpadRatio") private var trackpadRatio: Double = 0.5
+    @State private var dragOffset: CGFloat = 0
     @State private var showSettings = false
+    @State private var isBlinking = false
     
     let rowFn = [
         MacKey(label: "esc", code: 53, widthMultiplier: 1.5, isDark: true),
@@ -68,6 +71,16 @@ struct AirPadView: View {
         MacKey(label: "F7", code: 98, isDark: true), MacKey(label: "F8", code: 100, isDark: true),
         MacKey(label: "F9", code: 101, isDark: true), MacKey(label: "F10", code: 109, isDark: true),
         MacKey(label: "F11", code: 103, isDark: true), MacKey(label: "F12", code: 111, isDark: true)
+    ]
+    let rowSpace = [
+        MacKey(label: "control", code: 59, widthMultiplier: 1.33),
+        MacKey(label: "option", code: 58, widthMultiplier: 1.33),
+        MacKey(label: "⌘", code: 55, widthMultiplier: 1.33),
+        MacKey(label: "space", code: 49, widthMultiplier: 4.0),
+        MacKey(label: "◀", code: 123, widthMultiplier: 1.0),
+        MacKey(label: "▼", code: 125, widthMultiplier: 1.0),
+        MacKey(label: "▲", code: 126, widthMultiplier: 1.0),
+        MacKey(label: "▶", code: 124, widthMultiplier: 1.0)
     ]
     let rowNum = [
         MacKey(label: "1", code: 18), MacKey(label: "2", code: 19), MacKey(label: "3", code: 20), MacKey(label: "4", code: 21), MacKey(label: "5", code: 23),
@@ -169,29 +182,43 @@ struct AirPadView: View {
                 Spacer()
                 
                 // MAIN CONTENT
-                ZStack {
-                    keyboardZone
-                        .opacity(showTrackpad ? 0 : 1)
-                        .scaleEffect(showTrackpad ? 0.95 : 1.0)
+                GeometryReader { geo in
+                    let currentRatio = trackpadRatio + (dragOffset / geo.size.height)
+                    let clampedRatio = min(max(currentRatio, 0.0), 1.0)
+                    let trackpadHeight = max(0, geo.size.height * clampedRatio)
+                    let keyboardHeight = max(0, geo.size.height * (1.0 - clampedRatio) - 40)
                     
-                    if showTrackpad {
+                    VStack(spacing: 0) {
                         macTrackpadZone
-                            .transition(.move(edge: .bottom))
-                            .zIndex(1)
+                            .frame(height: trackpadHeight)
+                            .clipped()
+                            .opacity(trackpadHeight > 50 ? 1 : 0)
+                        
+                        // DOCK HANDLE
+                        ZStack {
+                            Color(white: 0.1)
+                            Capsule()
+                                .fill(Color.white.opacity(0.3))
+                                .frame(width: 130, height: 5)
+                                .padding(.vertical, 16)
+                        }
+                        .frame(height: 40)
+                        .contentShape(Rectangle())
+                        .gesture(DragGesture()
+                            .onChanged { val in
+                                dragOffset = val.translation.height
+                            }
+                            .onEnded { val in
+                                trackpadRatio = min(max(trackpadRatio + (val.translation.height / geo.size.height), 0.0), 1.0)
+                                dragOffset = 0
+                            }
+                        )
+                        
+                        keyboardZone
+                            .frame(height: keyboardHeight)
+                            .clipped()
+                            .opacity(keyboardHeight > 50 ? 1 : 0)
                     }
-                }
-                .animation(.spring(response: 0.4, dampingFraction: 0.8), value: showTrackpad)
-                
-                // DOCK HANDLE
-                Button(action: { showTrackpad.toggle() }) {
-                    ZStack {
-                        Color(white: 0.1).ignoresSafeArea(edges: .bottom)
-                        Capsule()
-                            .fill(Color.white.opacity(0.3))
-                            .frame(width: 130, height: 5)
-                            .padding(.vertical, 16)
-                    }
-                    .frame(height: 40)
                 }
             }
         }
