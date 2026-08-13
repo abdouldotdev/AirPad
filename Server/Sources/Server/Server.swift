@@ -58,8 +58,14 @@ final class MouseServer: @unchecked Sendable {
             if parts.count == 3, let dx = Double(parts[1]), let dy = Double(parts[2]) {
                 moveMouse(dx: dx, dy: dy)
             }
-        case "C": // C:1 (Click)
+        case "C": // C:1 (Left Click)
             clickMouse()
+        case "R": // R:1 (Right Click)
+            rightClick()
+        case "S": // S:dx:dy (Scroll)
+            if parts.count == 3, let dx = Double(parts[1]), let dy = Double(parts[2]) {
+                scrollMouse(dx: dx, dy: dy)
+            }
         case "K": // K:keycode:state (Key Press)
             if parts.count == 3, let code = UInt16(parts[1]), let state = Int(parts[2]) {
                 pressKey(keyCode: code, down: state == 1)
@@ -88,8 +94,21 @@ final class MouseServer: @unchecked Sendable {
         let location = currentMouseLocation
         let downEvent = CGEvent(mouseEventSource: nil, mouseType: .leftMouseDown, mouseCursorPosition: location, mouseButton: .left)
         let upEvent = CGEvent(mouseEventSource: nil, mouseType: .leftMouseUp, mouseCursorPosition: location, mouseButton: .left)
-        
         downEvent?.post(tap: .cghidEventTap)
         upEvent?.post(tap: .cghidEventTap)
+    }
+    
+    private func rightClick() {
+        let location = currentMouseLocation
+        let downEvent = CGEvent(mouseEventSource: nil, mouseType: .rightMouseDown, mouseCursorPosition: location, mouseButton: .right)
+        let upEvent = CGEvent(mouseEventSource: nil, mouseType: .rightMouseUp, mouseCursorPosition: location, mouseButton: .right)
+        downEvent?.post(tap: .cghidEventTap)
+        upEvent?.post(tap: .cghidEventTap)
+    }
+    
+    private func scrollMouse(dx: Double, dy: Double) {
+        let sensitivity = 3.0
+        let event = CGEvent(scrollWheelEvent2Source: nil, units: .pixel, wheelCount: 2, wheel1: Int32(dy * sensitivity), wheel2: Int32(dx * sensitivity), wheel3: 0)
+        event?.post(tap: .cghidEventTap)
     }
 }
