@@ -203,9 +203,9 @@ final class MouseServer: ObservableObject, @unchecked Sendable {
     
     func start(port: NWEndpoint.Port = 8080) {
         do {
-            listener = try NWListener(using: .udp, on: port)
+            listener = try NWListener(using: .tcp, on: 8080)
             listener?.newConnectionHandler = { [weak self] connection in
-                connection.start(queue: .global(qos: .userInteractive))
+                connection.start(queue: .main)
                 self?.receiveLoop(on: connection)
             }
             listener?.start(queue: .main)
@@ -226,11 +226,14 @@ final class MouseServer: ObservableObject, @unchecked Sendable {
     }
     
     private func receiveLoop(on connection: NWConnection) {
-        connection.receiveMessage { [weak self] (data, context, isComplete, error) in
+        connection.receive(minimumIncompleteLength: 1, maximumLength: 65536) { [weak self] (data, context, isComplete, error) in
             if let data = data, let message = String(data: data, encoding: .utf8) {
-                self?.processCommand(message)
+                let commands = message.split(separator: "\n")
+                for command in commands {
+                    self?.processCommand(String(command))
+                }
             }
-            if error == nil && self?.isListening == true {
+            if error == nil && self?.isListening == true && !isComplete {
                 self?.receiveLoop(on: connection)
             }
         }

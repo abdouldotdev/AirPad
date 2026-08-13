@@ -11,20 +11,30 @@ func T(_ en: String, _ fr: String) -> String {
 
 class NetworkClient: ObservableObject {
     private var connection: NWConnection?
-    private let queue = DispatchQueue(label: "UDP Client Queue", qos: .userInteractive)
+    private let queue = DispatchQueue(label: "TCP Client Queue", qos: .userInteractive)
     
     @Published var isConnected: Bool = false
     
-    func connect(to ipAddress: String, port: NWEndpoint.Port = 8080) {
-        let host = NWEndpoint.Host(ipAddress)
-        connection = NWConnection(host: host, port: port, using: .udp)
+    func connect(to host: String) {
+        connection?.cancel()
+        let endpoint = NWEndpoint.hostPort(host: NWEndpoint.Host(host), port: 8080)
+        connection = NWConnection(to: endpoint, using: .tcp)
+        
         connection?.stateUpdateHandler = { [weak self] state in
             DispatchQueue.main.async {
-                self?.isConnected = (state == .ready)
-                if state == .ready { self?.send("INIT:\(UIDevice.current.name)") }
+                switch state {
+                case .ready: self?.isConnected = true
+                case .failed(_), .cancelled: self?.isConnected = false
+                default: break
+                }
             }
         }
-        connection?.start(queue: queue)
+        connection?.start(queue: .global(qos: .userInteractive))
+    }
+    
+    func send(_ message: String) {
+        let data = (message + "\n").data(using: .utf8)
+        connection?.send(content: data, completion: .contentProcessed({ _ in }))
     }
     
     func sendMove(dx: CGFloat, dy: CGFloat) { send("M:\(dx):\(dy)") }
@@ -32,11 +42,6 @@ class NetworkClient: ObservableObject {
     func sendClick() { send("C:1") }
     func sendRightClick() { send("R:1") }
     func sendKey(code: UInt16, isDown: Bool) { send("K:\(code):\(isDown ? 1 : 0)") }
-    
-    private func send(_ message: String) {
-        guard let data = message.data(using: .utf8) else { return }
-        connection?.send(content: data, completion: .contentProcessed({ _ in }))
-    }
 }
 
 struct MacKey: Identifiable {
@@ -127,6 +132,29 @@ struct AirPadView: View {
             VStack(spacing: 0) {
                 // TOP BAR
                 HStack {
+                    Image(systemName: "gearshape.fill").padding(12).opacity(0) // invisible placeholder
+                    
+                    Spacer()
+                    
+                    Button(action: { if !client.isConnected { showSettings.toggle() } }) {
+                        HStack(spacing: 6) {
+                            Circle()
+                                .fill(client.isConnected ? Color.green : Color.red)
+                                .frame(width: 6, height: 6)
+                                .opacity(client.isConnected ? 1.0 : (isBlinking ? 0.2 : 1.0))
+                            
+                            Text(client.isConnected ? T("Connected", "Connecté") : T("Not Connected", "Non Connecté"))
+                                .font(.system(size: 11, weight: .bold))
+                                .foregroundColor(client.isConnected ? .green : .red)
+                        }
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 6)
+                        .background(Color.black.opacity(0.4))
+                        .cornerRadius(20)
+                    }
+                    
+                    Spacer()
+                    
                     Button(action: { showSettings.toggle() }) {
                         Image(systemName: "gearshape.fill")
                             .foregroundColor(.white.opacity(0.8))
@@ -134,29 +162,6 @@ struct AirPadView: View {
                             .background(Color.black.opacity(0.4))
                             .clipShape(Circle())
                     }
-                    
-                    Spacer()
-                    
-                    Button(action: { if !client.isConnected { showSettings.toggle() } }) {
-                        HStack(spacing: 8) {
-                            Circle()
-                                .fill(client.isConnected ? Color.green : Color.red)
-                                .frame(width: 8, height: 8)
-                                .opacity(client.isConnected ? 1.0 : (isBlinking ? 0.2 : 1.0))
-                            
-                            Text(client.isConnected ? T("Connected", "Connecté") : T("Not Connected", "Non Connecté"))
-                                .font(.caption.bold())
-                                .foregroundColor(client.isConnected ? .green : .red)
-                        }
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 8)
-                        .background(Color.black.opacity(0.4))
-                        .cornerRadius(20)
-                    }
-                    
-                    Spacer()
-                    
-                    Image(systemName: "gearshape.fill").padding(12).opacity(0)
                 }
                 .padding(.horizontal)
                 .padding(.top, 8)
