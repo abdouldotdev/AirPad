@@ -52,6 +52,7 @@ struct AirPadView: View {
     @AppStorage("serverIP") private var serverIP: String = "192.168.1.50"
     @AppStorage("advancedMode") private var advancedMode = false
     @AppStorage("keyboardLayout") private var keyboardLayout = "QWERTY"
+    @AppStorage("trackingSpeed") private var trackingSpeed: Double = 1.0
     @State private var showSettings = false
     
     let rowFn = [
@@ -202,7 +203,7 @@ struct AirPadView: View {
     
     var macTrackpadZone: some View {
         VStack(spacing: 0) {
-            TrackpadUIKitView(client: client)
+            TrackpadUIKitView(client: client, trackingSpeed: trackingSpeed)
                 .frame(maxHeight: .infinity)
             
             Divider().background(Color.black.opacity(0.1))
@@ -267,6 +268,7 @@ struct AirPadView: View {
 
 struct TrackpadUIKitView: UIViewRepresentable {
     let client: NetworkClient
+    var trackingSpeed: Double
     
     func makeUIView(context: Context) -> UIView {
         let view = UIView()
@@ -292,21 +294,28 @@ struct TrackpadUIKitView: UIViewRepresentable {
         return view
     }
     
-    func updateUIView(_ uiView: UIView, context: Context) {}
-    func makeCoordinator() -> Coordinator { Coordinator(client: client) }
+    func updateUIView(_ uiView: UIView, context: Context) {
+        context.coordinator.trackingSpeed = trackingSpeed
+    }
+    
+    func makeCoordinator() -> Coordinator { Coordinator(client: client, trackingSpeed: trackingSpeed) }
     
     class Coordinator: NSObject {
         let client: NetworkClient
+        var trackingSpeed: Double
         var lastPanPoint: CGPoint?
         var lastScrollPoint: CGPoint?
         
-        init(client: NetworkClient) { self.client = client }
+        init(client: NetworkClient, trackingSpeed: Double) { 
+            self.client = client 
+            self.trackingSpeed = trackingSpeed
+        }
         
         @objc func handlePan(_ gesture: UIPanGestureRecognizer) {
             let point = gesture.location(in: gesture.view)
             if gesture.state == .began { lastPanPoint = point }
             else if gesture.state == .changed, let last = lastPanPoint {
-                client.sendMove(dx: point.x - last.x, dy: point.y - last.y)
+                client.sendMove(dx: (point.x - last.x) * trackingSpeed, dy: (point.y - last.y) * trackingSpeed)
                 lastPanPoint = point
             }
             else if gesture.state == .ended { lastPanPoint = nil }
@@ -475,6 +484,7 @@ struct SettingsView: View {
     @Environment(\.presentationMode) var presentationMode
     @AppStorage("advancedMode") private var advancedMode = false
     @AppStorage("keyboardLayout") private var keyboardLayout = "QWERTY"
+    @AppStorage("trackingSpeed") private var trackingSpeed: Double = 1.0
     
     var body: some View {
         NavigationView {
@@ -540,6 +550,16 @@ struct SettingsView: View {
                         .padding()
                         .background(Color.gray.opacity(0.1))
                         .cornerRadius(12)
+                    
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(T("Tracking Speed (DPI)", "Vitesse du curseur (DPI)"))
+                            .font(.subheadline)
+                        Slider(value: $trackingSpeed, in: 0.2...4.0, step: 0.1)
+                            .accentColor(.blue)
+                    }
+                    .padding()
+                    .background(Color.gray.opacity(0.1))
+                    .cornerRadius(12)
                 }
                 
                 Spacer()
