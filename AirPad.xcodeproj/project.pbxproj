@@ -39,6 +39,7 @@
 		2A5202506C4A0D8B246754F5 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		2AC7C456530460CF3087DF11 /* KeyboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardView.swift; sourceTree = "<group>"; };
 		2AEF147DBF538D4B9424A95C /* AirPadServer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AirPadServer.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		2FBD8257C628C03FFBA5E600 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		38CCE540C62526E9FD4D4D90 /* AirPadClient.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = AirPadClient.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4087355484AEC09E062D087E /* TrackpadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackpadView.swift; sourceTree = "<group>"; };
 		76C6ED2D9369FBAF9490624E /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
@@ -56,6 +57,7 @@
 		E78EEB0BBAA5742073B1D9CF /* Localization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Localization.swift; sourceTree = "<group>"; };
 		F57A0E6C2693DFD46FF77CA5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F843BC19B017AD14C3BB723D /* MouseServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MouseServer.swift; sourceTree = "<group>"; };
+		FF08200F3E81BE538222D512 /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -87,6 +89,14 @@
 				76C6ED2D9369FBAF9490624E /* OnboardingView.swift */,
 			);
 			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		4CC7E0F8E8CBDDD4D02075AC /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				FF08200F3E81BE538222D512 /* Secrets.xcconfig */,
+			);
+			path = Config;
 			sourceTree = "<group>";
 		};
 		5EFF8AA1C59F0ECB778EDD27 /* Keyboard */ = {
@@ -123,6 +133,7 @@
 			children = (
 				CB77FB4CC19AAE1CDADC28E1 /* AirPadApp.swift */,
 				F57A0E6C2693DFD46FF77CA5 /* Assets.xcassets */,
+				2FBD8257C628C03FFBA5E600 /* Info.plist */,
 				E78EEB0BBAA5742073B1D9CF /* Localization.swift */,
 				5EFF8AA1C59F0ECB778EDD27 /* Keyboard */,
 				5FAE62DFB0164096C978420A /* Networking */,
@@ -138,6 +149,7 @@
 			isa = PBXGroup;
 			children = (
 				6DF7A2FFE881BD7DF91C35E4 /* Client */,
+				4CC7E0F8E8CBDDD4D02075AC /* Config */,
 				26FC12AB223FFD6B4DD4A9EE /* Server */,
 				65BE1F63AAE168597AA14654 /* Server */,
 				95C31440F925CC38D4918A3D /* Products */,
@@ -307,16 +319,18 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Developer ID Application";
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = HZ3366WY57;
+				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2026 Abdoul Rachid Tapsoba";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				LSUIElement = YES;
-				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.abdouldotdev.AirPadServer;
 				SDKROOT = macosx;
@@ -375,6 +389,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -387,17 +403,13 @@
 		};
 		8C0874C16FB43A9578AD020D /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = FF08200F3E81BE538222D512 /* Secrets.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = HZ3366WY57;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSCameraUsageDescription = "AirPad needs camera access to scan QR codes for pairing.";
-				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "AirPad needs local network to connect to Mac.";
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				INFOPLIST_FILE = Client/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -412,17 +424,13 @@
 		};
 		963727C1E3523F95FD088EDF /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = FF08200F3E81BE538222D512 /* Secrets.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = HZ3366WY57;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSCameraUsageDescription = "AirPad needs camera access to scan QR codes for pairing.";
-				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "AirPad needs local network to connect to Mac.";
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				INFOPLIST_FILE = Client/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -480,6 +488,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -493,16 +503,18 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Developer ID Application";
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = HZ3366WY57;
+				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2026 Abdoul Rachid Tapsoba";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				LSUIElement = YES;
-				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.abdouldotdev.AirPadServer;
 				SDKROOT = macosx;
