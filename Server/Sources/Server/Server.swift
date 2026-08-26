@@ -123,7 +123,7 @@ struct MacMainView: View {
             Divider()
 
             if server.isListening {
-                PairingPanel(server: server)
+                PairingPanel(server: server, pairing: server.pairing)
             } else {
                 Text(T("Server is inactive.", "Le serveur est inactif."))
                     .font(.headline)
@@ -180,12 +180,13 @@ struct MacMainView: View {
 
 struct PairingPanel: View {
     @ObservedObject var server: MouseServer
+    @ObservedObject var pairing: PairingManager
 
     var body: some View {
         VStack(spacing: 12) {
             if let ip = getLocalIPAddress() {
                 HStack(spacing: 20) {
-                    if let qr = generateQRCode(from: ip) {
+                    if let qr = generateQRCode(from: pairing.pairingPayload(host: ip, port: server.port)) {
                         Image(nsImage: qr)
                             .resizable()
                             .interpolation(.none)
@@ -197,13 +198,34 @@ struct PairingPanel: View {
                             .font(.callout)
                             .foregroundColor(.secondary)
                             .fixedSize(horizontal: false, vertical: true)
+
+                        Text(T("or type it in manually:", "ou saisissez-le à la main :"))
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .padding(.top, 2)
+
                         Text(ip)
-                            .font(.system(size: 22, weight: .heavy, design: .monospaced))
-                            .padding(.horizontal, 14)
-                            .padding(.vertical, 6)
+                            .font(.system(size: 19, weight: .heavy, design: .monospaced))
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 5)
                             .background(Color.blue.opacity(0.1))
                             .cornerRadius(8)
                             .textSelection(.enabled)
+
+                        HStack(spacing: 6) {
+                            Text(T("Code", "Code")).font(.caption).foregroundColor(.secondary)
+                            Text(pairing.displayCode)
+                                .font(.system(size: 17, weight: .heavy, design: .monospaced))
+                                .textSelection(.enabled)
+                            Button {
+                                pairing.regenerate()
+                            } label: {
+                                Image(systemName: "arrow.clockwise")
+                            }
+                            .buttonStyle(.borderless)
+                            .help(T("Generate a new code and unpair every device",
+                                    "Générer un nouveau code et dissocier tous les appareils"))
+                        }
                     }
                 }
             } else {

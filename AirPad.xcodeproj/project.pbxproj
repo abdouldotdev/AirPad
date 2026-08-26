@@ -12,16 +12,22 @@
 		62C9FD500F79DA9B5B27DD4D /* AirPadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E61569FF366665859E0855F /* AirPadView.swift */; };
 		C5FA355DCCB48377595DEE5A /* AirPadApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB77FB4CC19AAE1CDADC28E1 /* AirPadApp.swift */; };
 		DE63B14CBD86E8E77DD59F59 /* Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99582E017A94B2D80BA60854 /* Server.swift */; };
+		DF6F4648704249A448D1DE41 /* MouseServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F843BC19B017AD14C3BB723D /* MouseServer.swift */; };
+		EA1A9876A742D8ADFD32FD11 /* AccessibilityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C4FFD6F6A89CBE92C613E1 /* AccessibilityManager.swift */; };
+		EEF8FD260856C33158F6A6B3 /* Pairing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1925696B2C6727AF64550A2B /* Pairing.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1925696B2C6727AF64550A2B /* Pairing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pairing.swift; sourceTree = "<group>"; };
 		25300F70EF6EA18806DD4C45 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2AEF147DBF538D4B9424A95C /* AirPadServer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AirPadServer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		38CCE540C62526E9FD4D4D90 /* AirPadClient.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = AirPadClient.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6E61569FF366665859E0855F /* AirPadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AirPadView.swift; sourceTree = "<group>"; };
 		99582E017A94B2D80BA60854 /* Server.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Server.swift; sourceTree = "<group>"; };
 		CB77FB4CC19AAE1CDADC28E1 /* AirPadApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AirPadApp.swift; sourceTree = "<group>"; };
+		D2C4FFD6F6A89CBE92C613E1 /* AccessibilityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityManager.swift; sourceTree = "<group>"; };
 		F57A0E6C2693DFD46FF77CA5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		F843BC19B017AD14C3BB723D /* MouseServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MouseServer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -36,6 +42,9 @@
 		65BE1F63AAE168597AA14654 /* Server */ = {
 			isa = PBXGroup;
 			children = (
+				D2C4FFD6F6A89CBE92C613E1 /* AccessibilityManager.swift */,
+				F843BC19B017AD14C3BB723D /* MouseServer.swift */,
+				1925696B2C6727AF64550A2B /* Pairing.swift */,
 				99582E017A94B2D80BA60854 /* Server.swift */,
 			);
 			name = Server;
@@ -180,6 +189,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EA1A9876A742D8ADFD32FD11 /* AccessibilityManager.swift in Sources */,
+				DF6F4648704249A448D1DE41 /* MouseServer.swift in Sources */,
+				EEF8FD260856C33158F6A6B3 /* Pairing.swift in Sources */,
 				DE63B14CBD86E8E77DD59F59 /* Server.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

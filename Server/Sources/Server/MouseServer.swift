@@ -15,6 +15,12 @@ final class MouseServer: ObservableObject {
     /// Reliquat des paquets TCP précédents. Sans lui, une commande coupée en deux
     /// paquets (« M:12.5 » | « :3.0\n ») est perdue ou, pire, interprétée de travers.
     private var receiveBuffer = Data()
+    /// Tant que le code d'appairage n'a pas été validé, aucune commande n'est exécutée.
+    private var isAuthenticated = false
+    private var authTimeout: Task<Void, Never>?
+
+    /// Exposé pour que l'écran d'appairage affiche le QR et le code de secours.
+    let pairing = PairingManager()
 
     private var currentMouseLocation: CGPoint {
         guard let event = CGEvent(source: nil) else { return .zero }
@@ -73,6 +79,9 @@ final class MouseServer: ObservableObject {
         // et le téléphone continuait de piloter le Mac.
         activeConnection?.cancel()
         activeConnection = nil
+        authTimeout?.cancel()
+        authTimeout = nil
+        isAuthenticated = false
         receiveBuffer.removeAll()
         isListening = false
         connectedDevice = nil
@@ -87,6 +96,16 @@ final class MouseServer: ObservableObject {
         }
         activeConnection = connection
         receiveBuffer.removeAll()
+        isAuthenticated = false
+
+        // Une connexion qui ne s'authentifie pas rapidement est un scan de port,
+        // pas un client : elle ne doit pas monopoliser la place unique.
+        authTimeout = Task { @MainActor [weak self] in
+            try? await Task.sleep(nanoseconds: 5_000_000_000)
+            guard let self, !Task.isCancelled, self.activeConnection === connection, !self.isAuthenticated else { return }
+            connection.cancel()
+            self.disconnect(connection)
+        }
 
         connection.stateUpdateHandler = { [weak self] state in
             Task { @MainActor in
@@ -104,8 +123,11 @@ final class MouseServer: ObservableObject {
 
     private func disconnect(_ connection: NWConnection) {
         guard activeConnection === connection else { return }
+        authTimeout?.cancel()
+        authTimeout = nil
         activeConnection = nil
         receiveBuffer.removeAll()
+        isAuthenticated = false
         // L'ancien code n'écoutait aucun changement d'état : « Connecté à iPhone »
         // restait affiché indéfiniment après le départ du téléphone.
         connectedDevice = nil
@@ -157,6 +179,25 @@ final class MouseServer: ObservableObject {
         guard !command.isEmpty else { return }
         let parts = command.split(separator: ":", omittingEmptySubsequences: false)
         guard let action = parts.first else { return }
+
+        // Porte d'authentification : rien ne passe avant un AUTH valide.
+        guard isAuthenticated else {
+            guard action == "AUTH", parts.count == 2 else {
+                activeConnection.map { self.send("DENIED", on: $0) }
+                activeConnection?.cancel()
+                return
+            }
+            if pairing.isValid(String(parts[1])) {
+                isAuthenticated = true
+                authTimeout?.cancel()
+                authTimeout = nil
+                activeConnection.map { self.send("OK", on: $0) }
+            } else {
+                activeConnection.map { self.send("DENIED", on: $0) }
+                activeConnection?.cancel()
+            }
+            return
+        }
 
         switch action {
         case "INIT":
