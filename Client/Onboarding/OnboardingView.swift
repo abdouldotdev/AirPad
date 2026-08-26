@@ -75,10 +75,11 @@ struct OnboardingView: View {
                 TabView(selection: $index) {
                     ForEach(steps) { step in
                         VStack(spacing: 0) {
-                            Spacer(minLength: 12)
+                            Spacer(minLength: 0)
                             step.illustration
-                                .frame(maxHeight: 220)
-                            Spacer(minLength: 24)
+                                .frame(maxHeight: 240)
+                                .frame(maxWidth: .infinity)
+                            Spacer(minLength: 0)
 
                             VStack(spacing: 12) {
                                 Text(step.eyebrow)

@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		05957752250D9D066F5CDC20 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F57A0E6C2693DFD46FF77CA5 /* Assets.xcassets */; };
 		0C4A58219CCA419780CE6013 /* QRScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4040A706001A2381889EA6A /* QRScannerView.swift */; };
+		1194B97BF5E6D4A10CA324FA /* CaptureMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6ED9BFEDBB7E3CD2E3E6233 /* CaptureMode.swift */; };
 		18B56AD6FE02F48A96311696 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 25300F70EF6EA18806DD4C45 /* Assets.xcassets */; };
 		2A2EE41ADAB37632DEC0A16F /* AirPadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9577566716851E5CD4FFD3E8 /* AirPadView.swift */; };
 		496949CC7BFA7D0F0B5D3454 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5202506C4A0D8B246754F5 /* SettingsView.swift */; };
@@ -53,6 +54,7 @@
 		CB77FB4CC19AAE1CDADC28E1 /* AirPadApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AirPadApp.swift; sourceTree = "<group>"; };
 		CBBCBD8515B964BB59C76B44 /* SubscriptionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionManager.swift; sourceTree = "<group>"; };
 		D2C4FFD6F6A89CBE92C613E1 /* AccessibilityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityManager.swift; sourceTree = "<group>"; };
+		D6ED9BFEDBB7E3CD2E3E6233 /* CaptureMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureMode.swift; sourceTree = "<group>"; };
 		DB69BDE75742BCA6BA501AD4 /* KeyboardModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardModel.swift; sourceTree = "<group>"; };
 		E78EEB0BBAA5742073B1D9CF /* Localization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Localization.swift; sourceTree = "<group>"; };
 		F57A0E6C2693DFD46FF77CA5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -177,6 +179,7 @@
 			isa = PBXGroup;
 			children = (
 				8F31F5AACF6D8F674ABBD657 /* Analytics.swift */,
+				D6ED9BFEDBB7E3CD2E3E6233 /* CaptureMode.swift */,
 				CBBCBD8515B964BB59C76B44 /* SubscriptionManager.swift */,
 			);
 			path = Services;
@@ -285,6 +288,7 @@
 				C5FA355DCCB48377595DEE5A /* AirPadApp.swift in Sources */,
 				2A2EE41ADAB37632DEC0A16F /* AirPadView.swift in Sources */,
 				FA57C66CF13F8BDBD72D27E9 /* Analytics.swift in Sources */,
+				1194B97BF5E6D4A10CA324FA /* CaptureMode.swift in Sources */,
 				E6A1085F10DEFB645133C920 /* KeyboardModel.swift in Sources */,
 				4F59DA11CECCFEF0141C9EE9 /* KeyboardView.swift in Sources */,
 				B7970423C6A744EFC9F3772D /* Localization.swift in Sources */,

@@ -38,6 +38,7 @@ struct DistanceIllustration: View {
             MacShape(isDim: true)
                 .frame(width: 128, height: 92)
         }
+        .padding(.horizontal, 30)
         .onAppear {
             withAnimation(.easeInOut(duration: 1.6).repeatForever(autoreverses: true)) { nudge = true }
         }
@@ -74,6 +75,7 @@ struct ControlIllustration: View {
                     .offset(x: 34 + progress * 74, y: 66 - progress * 44)
             }
         }
+        .padding(.horizontal, 24)
         .onAppear {
             withAnimation(.easeInOut(duration: 2.0).repeatForever(autoreverses: true)) { progress = 1 }
         }

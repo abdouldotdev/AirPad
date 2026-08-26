@@ -249,7 +249,12 @@ struct AirPadView: View {
             // démesurées et injouables au pouce : la largeur est bornée et centrée.
             let width = min(geo.size.width - 16, 620)
             let baseKeyWidth = max(0, (width - (9 * 6)) / 10)
-            let rowHeight = min(baseKeyWidth, geo.size.height / CGFloat(advancedMode && hasKeyboard ? 7 : 6) - 8)
+            let rowCount = CGFloat(advancedMode && subscriptions.has(.functionRow) ? 6 : 5)
+            // Les touches s'étirent pour occuper la hauteur libre quand le trackpad
+            // est replié, sans jamais dépasser une fois et demie leur largeur :
+            // au-delà, elles cessent de ressembler à un clavier.
+            let fitted = (geo.size.height - 24 - (rowCount * 8)) / rowCount
+            let rowHeight = max(baseKeyWidth * 0.75, min(fitted, baseKeyWidth * 1.5))
 
             VStack {
                 Spacer(minLength: 0)
@@ -268,6 +273,7 @@ struct AirPadView: View {
                 .background(Color.black.opacity(0.3), in: RoundedRectangle(cornerRadius: 16))
                 .frame(width: width)
                 .frame(maxWidth: .infinity)
+                Spacer(minLength: 0)
             }
         }
         .padding(.horizontal, 8)

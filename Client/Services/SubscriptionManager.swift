@@ -62,7 +62,12 @@ final class SubscriptionManager: ObservableObject {
 
     var onEvent: ((String, [String: Any]) -> Void)?
 
-    func has(_ feature: PremiumFeature) -> Bool { isSubscribed }
+    func has(_ feature: PremiumFeature) -> Bool {
+        #if DEBUG
+        if CaptureMode.forcesSubscription { return true }
+        #endif
+        return isSubscribed
+    }
 
     #if canImport(RevenueCat)
     private var offering: Offering?

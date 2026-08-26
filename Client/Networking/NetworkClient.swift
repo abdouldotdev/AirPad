@@ -16,7 +16,14 @@ enum ConnectionState: Equatable {
 
 @MainActor
 final class NetworkClient: ObservableObject {
-    @Published private(set) var state: ConnectionState = .idle
+    @Published private(set) var state: ConnectionState = {
+        #if DEBUG
+        // Les captures de la fiche doivent montrer l'app dans son état normal,
+        // pas un « Connexion… » orange dû à l'absence de Mac sur le simulateur.
+        if CaptureMode.isActive { return .connected }
+        #endif
+        return .idle
+    }()
     @Published private(set) var currentMac: PairedMac?
 
     var isConnected: Bool { state.isConnected }
@@ -40,6 +47,9 @@ final class NetworkClient: ObservableObject {
     // MARK: - Cycle de vie
 
     func connect(to mac: PairedMac) {
+        #if DEBUG
+        if CaptureMode.isActive { currentMac = mac; return }
+        #endif
         disconnect(keepAlive: true)
         currentMac = mac
         shouldStayConnected = true

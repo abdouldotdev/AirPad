@@ -20,6 +20,12 @@ struct AirPadApp: App {
     @StateObject private var macStore = PairedMacStore()
     @StateObject private var subscriptions = SubscriptionManager()
 
+    init() {
+        #if DEBUG
+        CaptureMode.apply()
+        #endif
+    }
+
     var body: some Scene {
         WindowGroup {
             RootView(client: client, macStore: macStore, subscriptions: subscriptions)
@@ -35,6 +41,7 @@ struct RootView: View {
 
     @AppStorage("didFinishOnboarding") private var didFinishOnboarding = false
     @AppStorage("analyticsEnabled") private var analyticsEnabled = true
+    @State private var showCaptureSheet = false
 
     var body: some View {
         Group {
@@ -51,9 +58,31 @@ struct RootView: View {
             }
         }
         .task { await bootstrap() }
+        #if DEBUG
+        .sheet(isPresented: $showCaptureSheet) { captureSheet }
+        #endif
     }
 
+    #if DEBUG
+    @ViewBuilder
+    private var captureSheet: some View {
+        switch CaptureMode.screen {
+        case "paywall":
+            PaywallView(subscriptions: subscriptions, trigger: .keyboard)
+        case "settings", "settings-pro":
+            SettingsView(client: client, macStore: macStore, subscriptions: subscriptions)
+        default:
+            EmptyView()
+        }
+    }
+    #endif
+
     private func bootstrap() async {
+        #if DEBUG
+        if ["paywall", "settings", "settings-pro"].contains(CaptureMode.screen ?? "") {
+            showCaptureSheet = true
+        }
+        #endif
         if analyticsEnabled {
             Analytics.shared.configure(apiKey: AppConfig.postHogKey, host: AppConfig.postHogHost)
         }
