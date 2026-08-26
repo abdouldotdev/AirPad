@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		05957752250D9D066F5CDC20 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F57A0E6C2693DFD46FF77CA5 /* Assets.xcassets */; };
+		07B5E941D469C8FD44EEC11B /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = 3FD58E675B5E9BB7D78B294C /* RevenueCat */; };
 		0C4A58219CCA419780CE6013 /* QRScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4040A706001A2381889EA6A /* QRScannerView.swift */; };
 		1194B97BF5E6D4A10CA324FA /* CaptureMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6ED9BFEDBB7E3CD2E3E6233 /* CaptureMode.swift */; };
 		18B56AD6FE02F48A96311696 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 25300F70EF6EA18806DD4C45 /* Assets.xcassets */; };
@@ -29,6 +30,7 @@
 		E6A1085F10DEFB645133C920 /* KeyboardModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB69BDE75742BCA6BA501AD4 /* KeyboardModel.swift */; };
 		EA1A9876A742D8ADFD32FD11 /* AccessibilityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C4FFD6F6A89CBE92C613E1 /* AccessibilityManager.swift */; };
 		EEF8FD260856C33158F6A6B3 /* Pairing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1925696B2C6727AF64550A2B /* Pairing.swift */; };
+		F49630C2319AC70452E227E4 /* PostHog in Frameworks */ = {isa = PBXBuildFile; productRef = C5C7F72306E863FD51D01285 /* PostHog */; };
 		FA57C66CF13F8BDBD72D27E9 /* Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F31F5AACF6D8F674ABBD657 /* Analytics.swift */; };
 /* End PBXBuildFile section */
 
@@ -61,6 +63,18 @@
 		F843BC19B017AD14C3BB723D /* MouseServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MouseServer.swift; sourceTree = "<group>"; };
 		FF08200F3E81BE538222D512 /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		57C0F381108AAE5F3C155481 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				07B5E941D469C8FD44EEC11B /* RevenueCat in Frameworks */,
+				F49630C2319AC70452E227E4 /* PostHog in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		0CBB27070FCF16E94C2A0BF2 /* Views */ = {
@@ -194,6 +208,7 @@
 			buildPhases = (
 				0F615AD60C3E41B7E3FEEB9A /* Sources */,
 				8D032FC2CCAEDBF7CC78A3BF /* Resources */,
+				57C0F381108AAE5F3C155481 /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -201,6 +216,8 @@
 			);
 			name = AirPadClient;
 			packageProductDependencies = (
+				3FD58E675B5E9BB7D78B294C /* RevenueCat */,
+				C5C7F72306E863FD51D01285 /* PostHog */,
 			);
 			productName = AirPadClient;
 			productReference = 38CCE540C62526E9FD4D4D90 /* AirPadClient.app */;
@@ -251,6 +268,10 @@
 			);
 			mainGroup = 772C30E361C97B9515651400;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				A40A02863632D8EC652F53A1 /* XCRemoteSwiftPackageReference "posthog-ios" */,
+				3FDAC22D69107973D1B0EF38 /* XCRemoteSwiftPackageReference "purchases-ios" */,
+			);
 			preferredProjectObjectVersion = 77;
 			projectDirPath = "";
 			projectRoot = "";
@@ -557,6 +578,38 @@
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		3FDAC22D69107973D1B0EF38 /* XCRemoteSwiftPackageReference "purchases-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/RevenueCat/purchases-ios";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.0;
+			};
+		};
+		A40A02863632D8EC652F53A1 /* XCRemoteSwiftPackageReference "posthog-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/PostHog/posthog-ios";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		3FD58E675B5E9BB7D78B294C /* RevenueCat */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3FDAC22D69107973D1B0EF38 /* XCRemoteSwiftPackageReference "purchases-ios" */;
+			productName = RevenueCat;
+		};
+		C5C7F72306E863FD51D01285 /* PostHog */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A40A02863632D8EC652F53A1 /* XCRemoteSwiftPackageReference "posthog-ios" */;
+			productName = PostHog;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 88710B490536A898E4AE3E9F /* Project object */;
 }

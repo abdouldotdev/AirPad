@@ -5,8 +5,21 @@ options:
     iOS: "16.0"
     macOS: "13.0"
 
+packages:
+  RevenueCat:
+    url: https://github.com/RevenueCat/purchases-ios
+    from: "5.0.0"
+  PostHog:
+    url: https://github.com/PostHog/posthog-ios
+    from: "3.0.0"
+
 targets:
   AirPadClient:
+    dependencies:
+      - package: RevenueCat
+        product: RevenueCat
+      - package: PostHog
+        product: PostHog
     type: application
     platform: iOS
     sources:

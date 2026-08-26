@@ -37,7 +37,7 @@ struct PairingView: View {
                 } label: {
                     Label(showManualEntry
                           ? T("Hide manual entry", "Masquer la saisie manuelle")
-                          : T("Enter IP and code manually", "Saisir l'IP et le code à la main"),
+                          : T("Or enter IP and code manually", "Ou saisissez l'IP et le code à la main"),
                           systemImage: "keyboard")
                         .font(.subheadline)
                 }
@@ -58,7 +58,7 @@ struct PairingView: View {
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                     Link(destination: LegalLinks.macDownload) {
-                        Label(T("Download AirPad for Mac — free", "Télécharger AirPad pour Mac — gratuit"),
+                        Label(T("Download AirPad for Mac", "Télécharger AirPad pour Mac"),
                               systemImage: "arrow.down.circle.fill")
                             .font(.subheadline.weight(.semibold))
                     }

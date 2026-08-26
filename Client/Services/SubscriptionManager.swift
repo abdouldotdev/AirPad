@@ -53,7 +53,7 @@ struct SubscriptionPlan: Identifiable, Equatable {
 
 @MainActor
 final class SubscriptionManager: ObservableObject {
-    static let entitlementID = "premium"
+    static let entitlementID = "airpad_pro"
 
     @Published private(set) var isSubscribed = false
     @Published private(set) var plans: [SubscriptionPlan] = []
