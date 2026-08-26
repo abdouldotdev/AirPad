@@ -36,4 +36,4 @@ xcodebuild -scheme AirPadServer -destination 'platform=macOS' build
 ```
 
 The Mac app is distributed as a signed and notarized DMG through
-[GitHub Releases](https://github.com/abdouldotdev/MacTrack/releases/latest).
+[GitHub Releases](https://github.com/abdouldotdev/AirPad/releases/latest).

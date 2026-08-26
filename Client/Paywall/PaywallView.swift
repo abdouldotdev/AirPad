@@ -251,7 +251,7 @@ struct PlanRow: View {
 }
 
 enum LegalLinks {
-    static let privacy = URL(string: "https://abdouldotdev.github.io/MacTrack/privacy.html")!
-    static let terms = URL(string: "https://abdouldotdev.github.io/MacTrack/terms.html")!
-    static let macDownload = URL(string: "https://github.com/abdouldotdev/MacTrack/releases/latest")!
+    static let privacy = URL(string: "https://abdouldotdev.github.io/AirPad/privacy.html")!
+    static let terms = URL(string: "https://abdouldotdev.github.io/AirPad/terms.html")!
+    static let macDownload = URL(string: "https://github.com/abdouldotdev/AirPad/releases/latest")!
 }
