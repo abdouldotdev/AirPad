@@ -168,9 +168,17 @@ final class MouseServer: ObservableObject {
         if receiveBuffer.count > 1_048_576 { receiveBuffer.removeAll() }
     }
 
-    private func send(_ message: String, on connection: NWConnection) {
-        guard let data = (message + "\n").data(using: .utf8) else { return }
-        connection.send(content: data, completion: .contentProcessed { _ in })
+    private func send(_ message: String, on connection: NWConnection, thenClose: Bool = false) {
+        guard let data = (message + "\n").data(using: .utf8) else {
+            if thenClose { connection.cancel() }
+            return
+        }
+        // Fermer immédiatement après send() coupe la connexion avant que l'octet
+        // ne parte : le téléphone n'apprenait jamais que son code avait été refusé
+        // et repartait en boucle de reconnexion.
+        connection.send(content: data, completion: .contentProcessed { _ in
+            if thenClose { connection.cancel() }
+        })
     }
 
     // MARK: - Protocole
@@ -182,19 +190,18 @@ final class MouseServer: ObservableObject {
 
         // Porte d'authentification : rien ne passe avant un AUTH valide.
         guard isAuthenticated else {
+            guard let connection = activeConnection else { return }
             guard action == "AUTH", parts.count == 2 else {
-                activeConnection.map { self.send("DENIED", on: $0) }
-                activeConnection?.cancel()
+                send("DENIED", on: connection, thenClose: true)
                 return
             }
             if pairing.isValid(String(parts[1])) {
                 isAuthenticated = true
                 authTimeout?.cancel()
                 authTimeout = nil
-                activeConnection.map { self.send("OK", on: $0) }
+                send("OK", on: connection)
             } else {
-                activeConnection.map { self.send("DENIED", on: $0) }
-                activeConnection?.cancel()
+                send("DENIED", on: connection, thenClose: true)
             }
             return
         }
