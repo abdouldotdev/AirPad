@@ -66,16 +66,28 @@ targets:
     sources:
       - Server/Sources/Server
       - Server/Assets.xcassets
+    info:
+      path: Server/Info.plist
+      properties:
+        CFBundleName: AirPad
+        CFBundleDisplayName: AirPad
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        # Application d'arrière-plan : pas d'icône dans le Dock, seulement le menu.
+        LSUIElement: true
+        LSMinimumSystemVersion: $(MACOSX_DEPLOYMENT_TARGET)
+        NSHumanReadableCopyright: "Copyright © 2026 Abdoul Rachid Tapsoba"
+        NSHighResolutionCapable: true
     settings:
-      GENERATE_INFOPLIST_FILE: YES
+      # Le plist ci-dessus fait foi ; sans cette ligne Xcode en régénère un et
+      # réécrit CFBundleName avec le nom de la cible.
+      GENERATE_INFOPLIST_FILE: NO
       CURRENT_PROJECT_VERSION: 1
       MARKETING_VERSION: 1.0
       PRODUCT_BUNDLE_IDENTIFIER: com.abdouldotdev.AirPadServer
       SWIFT_VERSION: 5.0
       DEVELOPMENT_TEAM: HZ3366WY57
       ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
-      INFOPLIST_KEY_LSUIElement: YES
-      INFOPLIST_KEY_NSHumanReadableCopyright: "Copyright © 2026 Abdoul Rachid Tapsoba"
       # Exigé par la notarisation ; l'App Sandbox reste désactivé, il empêcherait
       # l'injection d'événements clavier et souris globaux.
       ENABLE_HARDENED_RUNTIME: YES
