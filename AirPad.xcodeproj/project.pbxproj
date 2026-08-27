@@ -23,6 +23,7 @@
 		A5A219DCBE21A57197A85376 /* PairingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EF9428A89CF7CBAC54E9399 /* PairingView.swift */; };
 		B7970423C6A744EFC9F3772D /* Localization.swift in Sources */ = {isa = PBXBuildFile; fileRef = E78EEB0BBAA5742073B1D9CF /* Localization.swift */; };
 		BBC0344A38412154D0FB6DBF /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76C6ED2D9369FBAF9490624E /* OnboardingView.swift */; };
+		BC32982579F08AB2F64B7D03 /* TryFreeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A572812090600BFA5364B4F /* TryFreeView.swift */; };
 		C5FA355DCCB48377595DEE5A /* AirPadApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB77FB4CC19AAE1CDADC28E1 /* AirPadApp.swift */; };
 		D1BF0F5C3ED6A953D830FBFB /* PairedMac.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78C66586A928781737AA800D /* PairedMac.swift */; };
 		D1FFD143BEA91B4E162D53EC /* OnboardingIllustrations.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD3046C82DD9A51EAB8B5B88 /* OnboardingIllustrations.swift */; };
@@ -45,6 +46,7 @@
 		2AEF147DBF538D4B9424A95C /* AirPadServer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AirPadServer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2FBD8257C628C03FFBA5E600 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		38CCE540C62526E9FD4D4D90 /* AirPadClient.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = AirPadClient.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3A572812090600BFA5364B4F /* TryFreeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TryFreeView.swift; sourceTree = "<group>"; };
 		4087355484AEC09E062D087E /* TrackpadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackpadView.swift; sourceTree = "<group>"; };
 		76C6ED2D9369FBAF9490624E /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		78C66586A928781737AA800D /* PairedMac.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PairedMac.swift; sourceTree = "<group>"; };
@@ -179,6 +181,7 @@
 			isa = PBXGroup;
 			children = (
 				29677A31F8171490B14B03EE /* PaywallView.swift */,
+				3A572812090600BFA5364B4F /* TryFreeView.swift */,
 			);
 			path = Paywall;
 			sourceTree = "<group>";
@@ -327,6 +330,7 @@
 				A56FAC1837917087465CF660 /* SubscriptionManager.swift in Sources */,
 				7E998042C6172329BB07208E /* Theme.swift in Sources */,
 				559CF95EB1BAAB15F49F82E7 /* TrackpadView.swift in Sources */,
+				BC32982579F08AB2F64B7D03 /* TryFreeView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

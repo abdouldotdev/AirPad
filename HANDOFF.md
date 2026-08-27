@@ -1,6 +1,6 @@
 # AirPad — état du chantier v1 App Store
 
-Dernière mise à jour : 2026-08-27 (session 2)
+Dernière mise à jour : 2026-08-27 (session 3)
 Branche de travail : `release/v1-appstore` (poussée sur `origin`)
 
 ---
@@ -35,6 +35,67 @@ Branche de travail : `release/v1-appstore` (poussée sur `origin`)
    et `/tmp/airpad-dmg` en fin de tâche. Ne pas créer de simulateur superflu.
 
 ---
+
+## 0. Ce qui a changé en session 3 — À LIRE
+
+### Le modèle économique a changé : hard paywall INTÉGRAL
+
+Le handoff précédent disait « trackpad gratuit, clavier payant ». **C'est faux
+maintenant.** Décision de l'utilisateur, verbatim : « pour accéder au feature il
+faut un abonnement. même free trial ça suffit. »
+
+- `PremiumFeature.keyboard` couvre clavier **et** trackpad (une seule ligne dans
+  la table du paywall : les séparer faisait passer le trackpad pour un accessoire
+  alors que c'est la fonction principale).
+- Sans abonnement, `AirPadView` n'affiche **pas** la surface de contrôle : elle
+  est remplacée par `TryFreeView`. Ne pas remettre de flou ni de panneau flottant
+  par-dessus le trackpad — cela a été explicitement rejeté deux fois.
+- `Store/listing-en-US.md` et `Store/review-notes.md` ont été réécrits en
+  conséquence. **Ne pas revenir à la version « trackpad gratuit ».**
+
+### Direction artistique
+
+- **Bleu `Brand.accent`** = l'app (onboarding, connexion, réglages).
+- **Or et argent `Premium.*`** = tout ce qui touche à l'abonnement.
+- Les couleurs sémantiques (vert connecté, rouge erreur) ne servent **qu'aux
+  états**, jamais à décorer. L'onboarding avait quatre teintes différentes ;
+  il n'en a plus qu'une.
+- Un métal a besoin d'un reflet : `goldSheen` / `silverSheen` sont des dégradés
+  dans **une seule matière**, ce n'est pas un retour au bicolore.
+- `ProWordmark` compose « AirPad **Pro** » + couronne. L'utiliser partout plutôt
+  que de recomposer le lockup à la main.
+
+### Fichiers ajoutés
+| Fichier | Rôle |
+|---|---|
+| `Client/Theme.swift` | `Brand`, `Premium`, `ProWordmark` |
+| `Client/Paywall/TryFreeView.swift` | Page affichée sans abonnement : grande illustration animée en angle, « We want you to use AirPad for free. », CTA « Try it now » |
+
+### Débloquer Pro sans achat
+Réglages → section **Debug** → *Débloquer AirPad Pro* (`SubscriptionManager.debugUnlock`,
+persisté dans `UserDefaults`). Compilé uniquement en Debug. Sert à filmer la démo.
+
+### Pièges rencontrés en session 3
+1. **`xcodebuild` sort en code 0 alors que le build a échoué** (mauvais
+   identifiant d'appareil). Toujours vérifier la présence de `BUILD SUCCEEDED`
+   dans la sortie, jamais le code retour seul.
+2. **`devicectl` et `xcodebuild` n'utilisent pas le même identifiant.**
+   `xcrun devicectl list devices` donne un UUID CoreDevice ; `xcodebuild` veut
+   l'UDID matériel, donné par `xcrun xctrace list devices`.
+   iPhone 15 Pro d'Abdoul : **`00008130-000E35182861401C`** (iOS 26.5).
+3. **Espace disque critique** (~2 Go). Un build device pèse ~2 Go. Purger
+   `~/Library/Developer/Xcode/DerivedData`, `~/Library/Caches/org.swift.swiftpm`
+   et `/tmp/airpad-dd` avant de compiler.
+4. **Nouveau fichier Swift ⇒ `xcodegen generate` obligatoire**, sinon
+   « cannot find X in scope » : le `.pbxproj` liste les fichiers explicitement.
+5. **L'extension Chrome de Claude ne se connecte pas** malgré une installation
+   dans Chrome *et* dans Arc. `list_connected_browsers` renvoie `[]`.
+   Ne pas y passer du temps : la fiche App Store se crée à la main de toute façon,
+   **l'API d'Apple n'a pas de `create_app`**.
+6. **TCC et Accessibilité** : remplacer le binaire d'une app déjà autorisée
+   invalide l'octroi, et la case reste cochée dans les Réglages Système en ne
+   s'appliquant à rien. Remède : `tccutil reset Accessibility com.abdouldotdev.AirPadServer`,
+   puis re-autoriser. L'app Mac vit dans `/Applications/AirPadServer.app`.
 
 ## 1. Bugs — terminé
 
