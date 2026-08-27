@@ -20,12 +20,22 @@ enum CaptureMode {
         ["keyboard", "keyboard-azerty", "settings-pro", "trackpad"].contains(screen ?? "")
     }
 
+    /// `-capture onboarding-2` ouvre l'onboarding sur son deuxième écran.
+    /// Sans cela les écrans 2 et 3 ne sont atteignables qu'en balayant à la main,
+    /// ce qui interdit une capture reproductible.
+    static var onboardingStep: Int? {
+        guard let screen, screen.hasPrefix("onboarding") else { return nil }
+        let parts = screen.split(separator: "-")
+        guard parts.count == 2, let page = Int(parts[1]), (1...3).contains(page) else { return nil }
+        return page - 1
+    }
+
     static func apply() {
         guard let screen else { return }
         let defaults = UserDefaults.standard
 
         switch screen {
-        case "onboarding":
+        case let name where name.hasPrefix("onboarding"):
             defaults.set(false, forKey: "didFinishOnboarding")
             defaults.removeObject(forKey: "pairedMacs")
         case "pairing":

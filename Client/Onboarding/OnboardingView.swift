@@ -134,6 +134,9 @@ struct OnboardingView: View {
             }
         }
         .onAppear {
+            #if DEBUG
+            if let step = CaptureMode.onboardingStep { index = step }
+            #endif
             Analytics.shared.capture(Event.onboardingStarted)
             Analytics.shared.capture(Event.onboardingStepViewed, ["step": 0])
         }
