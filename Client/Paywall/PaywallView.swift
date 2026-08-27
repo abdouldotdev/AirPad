@@ -12,12 +12,11 @@ struct PaywallView: View {
 
     var body: some View {
         ZStack {
-            LinearGradient(colors: [Color(white: 0.1), Color(red: 0.06, green: 0.09, blue: 0.18)],
-                           startPoint: .top, endPoint: .bottom)
+            Premium.backdrop
                 .ignoresSafeArea()
 
             ScrollView {
-                VStack(spacing: 24) {
+                VStack(spacing: 18) {
                     header
                     featureList
                     planPicker
@@ -25,7 +24,7 @@ struct PaywallView: View {
                     footer
                 }
                 .padding(.horizontal, 24)
-                .padding(.vertical, 24)
+                .padding(.vertical, 14)
                 .frame(maxWidth: 540)
                 .frame(maxWidth: .infinity)
             }
@@ -67,13 +66,7 @@ struct PaywallView: View {
     }
 
     private var header: some View {
-        VStack(spacing: 12) {
-            Image("SplashIcon")
-                .resizable()
-                .scaledToFill()
-                .frame(width: 76, height: 76)
-                .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
-
+        VStack(spacing: 10) {
             ProWordmark(size: 30)
 
             Text(trigger?.subtitle ?? T("Everything your Mac keyboard and trackpad can do, on your phone.",
@@ -82,16 +75,15 @@ struct PaywallView: View {
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.white.opacity(0.7))
         }
-        .padding(.top, 24)
     }
 
     private var featureList: some View {
-        VStack(spacing: 14) {
+        VStack(spacing: 11) {
             ForEach(PremiumFeature.allCases, id: \.rawValue) { feature in
                 HStack(spacing: 14) {
                     Image(systemName: feature.systemImage)
                         .font(.system(size: 16, weight: .semibold))
-                        .foregroundStyle(feature == trigger ? Brand.accent : .white.opacity(0.85))
+                        .foregroundStyle(feature == trigger ? AnyShapeStyle(Premium.goldSheen) : AnyShapeStyle(Premium.silverSheen))
                         .frame(width: 30)
                     VStack(alignment: .leading, spacing: 2) {
                         Text(feature.title)
@@ -104,18 +96,8 @@ struct PaywallView: View {
                     Spacer(minLength: 0)
                 }
             }
-
-            // Rappeler ce qui reste gratuit sur l'écran qui vend : c'est ce que
-            // vérifie App Review pour la règle 2.3.1, et ça désamorce le doute
-            // « est-ce qu'on me retire quelque chose que j'avais ? ».
-            Divider().overlay(Color.white.opacity(0.12))
-            Text(T("The trackpad — pointer, clicks and scrolling — stays free, always.",
-                   "Le trackpad — curseur, clics et défilement — reste gratuit, toujours."))
-                .font(.caption)
-                .foregroundStyle(.white.opacity(0.5))
-                .fixedSize(horizontal: false, vertical: true)
         }
-        .padding(18)
+        .padding(14)
         .background(Color.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
     }
 
@@ -187,10 +169,10 @@ struct PaywallView: View {
                     .frame(maxWidth: .infinity)
                     .frame(height: 54)
                     .background(
-                        Brand.accent,
+                        Premium.goldSheen,
                         in: RoundedRectangle(cornerRadius: 16, style: .continuous)
                     )
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Premium.onGold)
             }
             .disabled(selectedPlanID == nil)
             .opacity(selectedPlanID == nil ? 0.5 : 1)
@@ -242,7 +224,7 @@ struct PlanRow: View {
         HStack(spacing: 14) {
             Image(systemName: isSelected ? "largecircle.fill.circle" : "circle")
                 .font(.system(size: 20))
-                .foregroundStyle(isSelected ? Brand.accent : .white.opacity(0.3))
+                .foregroundStyle(isSelected ? AnyShapeStyle(Premium.goldSheen) : AnyShapeStyle(Color.white.opacity(0.3)))
 
             VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 8) {
@@ -254,7 +236,7 @@ struct PlanRow: View {
                             .font(.system(size: 9, weight: .heavy))
                             .padding(.horizontal, 7)
                             .padding(.vertical, 3)
-                            .background(Brand.accent, in: Capsule())
+                            .background(Premium.goldSheen, in: Capsule())
                             .foregroundStyle(.black)
                     }
                 }
@@ -283,7 +265,7 @@ struct PlanRow: View {
         )
         .overlay(
             RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .stroke(isSelected ? Brand.accent : Color.white.opacity(0.12), lineWidth: isSelected ? 2 : 1)
+                .stroke(isSelected ? Premium.gold : Color.white.opacity(0.12), lineWidth: isSelected ? 2 : 1)
         )
         .contentShape(Rectangle())
     }

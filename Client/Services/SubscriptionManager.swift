@@ -5,6 +5,7 @@ import RevenueCat
 
 /// Fonctionnalités soumises à l'abonnement.
 enum PremiumFeature: String, CaseIterable {
+    case trackpad          // trackpad Mac
     case keyboard          // clavier Mac complet
     case functionRow       // rangée F1-F12
     case pointerSpeed      // vitesse du curseur
@@ -13,6 +14,7 @@ enum PremiumFeature: String, CaseIterable {
 
     var title: String {
         switch self {
+        case .trackpad: return T("Mac trackpad", "Trackpad Mac")
         case .keyboard: return T("Full Mac keyboard", "Clavier Mac complet")
         case .functionRow: return T("F1–F12 function row", "Rangée de touches F1–F12")
         case .pointerSpeed: return T("Pointer speed control", "Réglage de la vitesse du curseur")
@@ -23,6 +25,7 @@ enum PremiumFeature: String, CaseIterable {
 
     var subtitle: String {
         switch self {
+        case .trackpad: return T("Move, click and scroll from the couch.", "Déplacez, cliquez et défilez depuis le canapé.")
         case .keyboard: return T("Type on your Mac from anywhere in the room.", "Tapez sur votre Mac depuis n'importe où dans la pièce.")
         case .functionRow: return T("Volume, brightness, Mission Control.", "Volume, luminosité, Mission Control.")
         case .pointerSpeed: return T("Tune tracking from precise to fast.", "Du pointage précis au déplacement rapide.")
@@ -33,6 +36,7 @@ enum PremiumFeature: String, CaseIterable {
 
     var systemImage: String {
         switch self {
+        case .trackpad: return "rectangle.and.hand.point.up.left"
         case .keyboard: return "keyboard"
         case .functionRow: return "slider.horizontal.3"
         case .pointerSpeed: return "speedometer"
@@ -93,10 +97,20 @@ final class SubscriptionManager: ObservableObject {
 
     func has(_ feature: PremiumFeature) -> Bool {
         #if DEBUG
-        if CaptureMode.forcesSubscription { return true }
+        if CaptureMode.forcesSubscription || Self.debugUnlock { return true }
         #endif
         return isSubscribed
     }
+
+    #if DEBUG
+    /// Débloque tout sans passer par l'App Store, le temps de filmer la démo.
+    /// Persisté : l'app est relancée entre les prises, un booléen en mémoire
+    /// obligerait à recocher la case à chaque fois.
+    static var debugUnlock: Bool {
+        get { UserDefaults.standard.bool(forKey: "debugUnlockPro") }
+        set { UserDefaults.standard.set(newValue, forKey: "debugUnlockPro") }
+    }
+    #endif
 
     #if canImport(RevenueCat)
     private var offering: Offering?

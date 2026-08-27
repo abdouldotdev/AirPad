@@ -23,6 +23,9 @@ struct SettingsView: View {
                 preferencesSection
                 privacySection
                 aboutSection
+                #if DEBUG
+                debugSection
+                #endif
             }
             .navigationTitle(T("Settings", "Réglages"))
             .navigationBarTitleDisplayMode(.inline)
@@ -98,7 +101,7 @@ struct SettingsView: View {
                         .foregroundStyle(.white)
                         .frame(width: 42, height: 42)
                         .background(
-                            Brand.accent,
+                            Premium.goldSheen,
                             in: RoundedRectangle(cornerRadius: 11, style: .continuous)
                         )
                     VStack(alignment: .leading, spacing: 2) {
@@ -182,9 +185,26 @@ struct SettingsView: View {
             .font(.system(size: 10, weight: .heavy))
             .padding(.horizontal, 7)
             .padding(.vertical, 3)
-            .background(Brand.accent, in: Capsule())
+            .background(Premium.goldSheen, in: Capsule())
             .foregroundStyle(.white)
     }
+
+    #if DEBUG
+    /// Contournement du paywall pour filmer la démonstration : l'achat en bac à
+    /// sable dépend de produits qui n'existent pas encore côté App Store Connect.
+    /// Compilé uniquement en Debug — rien de tout ceci n'existe dans la livraison.
+    private var debugSection: some View {
+        Section("Debug") {
+            Toggle("Débloquer AirPad Pro", isOn: Binding(
+                get: { SubscriptionManager.debugUnlock },
+                set: { SubscriptionManager.debugUnlock = $0 }
+            ))
+            Text("Réservé aux tests et à la capture vidéo.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+    }
+    #endif
 
     private var privacySection: some View {
         Section {

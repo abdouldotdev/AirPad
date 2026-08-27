@@ -291,56 +291,35 @@ struct AirPadView: View {
     /// annonçant d'abord ce que ça coûte aujourd'hui — rien. Le prix qui viendra
     /// est écrit juste en dessous : le cacher fait gagner un essai et perd la
     /// confiance au premier prélèvement.
+    /// L'invite posée sur le clavier verrouillé.
+    ///
+    /// Un panneau plein cadre entrait en concurrence visuelle avec le trackpad
+    /// juste en dessous : deux surfaces de même poids, et l'œil ne savait plus
+    /// laquelle était l'écran. Une capsule compacte laisse le clavier flouté
+    /// raconter ce qui est verrouillé, et le paywall complet s'ouvre en sheet.
     private var keyboardLock: some View {
-        VStack(spacing: 0) {
-            Spacer(minLength: 0)
+        Button {
+            present(.keyboard)
+        } label: {
+            HStack(spacing: 10) {
+                Image(systemName: "lock.fill")
+                    .font(.system(size: 13, weight: .bold))
+                    .foregroundStyle(Premium.onGold)
 
-            ProWordmark(size: 17)
-
-            Text(T("Try it free for 3 days", "Essayez 3 jours, gratuitement"))
-                .font(.system(size: 23, weight: .bold, design: .rounded))
-                .multilineTextAlignment(.center)
-                .foregroundStyle(.white)
-                .padding(.top, 10)
-
-            Text(T("$0.00 today", "0,00 $ aujourd'hui"))
-                .font(.title3.weight(.bold))
-                .foregroundStyle(Brand.accent)
-                .padding(.top, 2)
-
-            Text(T("The full Mac keyboard, F1–F12, pointer speed, gestures and multi-Mac — unlocked right away.",
-                   "Le clavier Mac complet, F1–F12, la vitesse du curseur, les gestes et le multi-Mac — débloqués aussitôt."))
-                .font(.caption)
-                .multilineTextAlignment(.center)
-                .foregroundStyle(.white.opacity(0.6))
-                .fixedSize(horizontal: false, vertical: true)
-                .padding(.top, 10)
-                .padding(.horizontal, 12)
-
-            Button {
-                present(.keyboard)
-            } label: {
-                Text(T("Start my free trial", "Démarrer mon essai gratuit"))
-                    .font(.subheadline.weight(.semibold))
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 48)
-                    .background(Brand.accent, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-                    .foregroundStyle(.white)
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(T("Unlock the keyboard", "Débloquer le clavier"))
+                        .font(.subheadline.weight(.bold))
+                        .foregroundStyle(Premium.onGold)
+                    Text(T("3 days free — $0.00 today", "3 jours gratuits — 0,00 $ aujourd'hui"))
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(Premium.onGold.opacity(0.75))
+                }
             }
-            .padding(.top, 16)
-
-            Text(T("Then billed yearly. Cancel anytime.", "Puis facturé à l'année. Résiliable à tout moment."))
-                .font(.caption2)
-                .foregroundStyle(.white.opacity(0.45))
-                .padding(.top, 8)
-
-            Spacer(minLength: 0)
+            .padding(.horizontal, 18)
+            .padding(.vertical, 11)
+            .background(Premium.goldSheen, in: Capsule())
+            .shadow(color: .black.opacity(0.5), radius: 12, y: 4)
         }
-        .padding(.vertical, 20)
-        .padding(.horizontal, 22)
-        .frame(maxWidth: 420)
-        .background(Color.black.opacity(0.62), in: RoundedRectangle(cornerRadius: 20, style: .continuous))
-        .padding(.horizontal, 18)
     }
 
     private func present(_ feature: PremiumFeature) {
