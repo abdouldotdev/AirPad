@@ -1,6 +1,6 @@
 # AirPad — état du chantier v1 App Store
 
-Dernière mise à jour : 2026-08-27
+Dernière mise à jour : 2026-08-27 (session 2)
 Branche de travail : `release/v1-appstore` (poussée sur `origin`)
 
 ---
@@ -83,13 +83,32 @@ Faites, en 1320×2868 (format iPhone 6.9" exact) :
 `05-keyboard-azerty`, `06-trackpad`, `07-paywall`, `08-settings`,
 plus `10-mac-window.png` (fenêtre Mac avec QR, code et bannière Accessibilité).
 
-**Reste à faire** : captures iPad 13" (2064×2752), capture du menu bar macOS,
-captures onboarding 2 et 3, et refaire `07-paywall` une fois les produits App Store
-créés (il affiche aujourd'hui « offres indisponibles »).
+Ajoutées en session 2 :
+`01b-onboarding-2`, `01c-onboarding-3` (iPhone), `11-mac-menubar.png` (menu de la
+barre de menus macOS, ouvert), et la série iPad 13" complète en **2064×2752** :
+`ipad-01-onboarding`, `ipad-02-pairing`, `ipad-03-trackpad`, `ipad-04-keyboard-qwerty`,
+`ipad-05-keyboard-azerty`, `ipad-06-remote-free`, `ipad-07-settings`.
+
+**Reste à faire** : refaire `07-paywall` une fois les produits App Store créés
+(il affiche aujourd'hui « offres indisponibles »).
+
+⚠️ **Piège des captures simulateur** : l'écran `pairing` déclenche la demande
+d'accès caméra, et cette alerte système **reste affichée par-dessus toutes les
+captures suivantes**. `simctl privacy … grant camera` ne la referme pas une fois
+présentée. Il faut désinstaller l'app, relancer SpringBoard
+(`xcrun simctl spawn <dev> launchctl kickstart -k system/com.apple.SpringBoard`),
+réinstaller, puis accorder la caméra **avant** la première capture.
+
+⚠️ **`rtk` casse les pipelines** : `rtk find` / `rtk grep` sont des équivalents
+sémantiques, pas des remplacements shell — `rtk find … | head` renvoie du texte
+inutilisable et `rtk ls | rtk grep x` cherche dans le dépôt au lieu de stdin.
+Pour ces cas, utiliser `/usr/bin/find`, `/usr/bin/grep` en chemin absolu.
 
 ### Mode capture
 L'app accepte un argument de lancement, actif en Debug uniquement
-(`Client/Services/CaptureMode.swift`) :
+(`Client/Services/CaptureMode.swift`). Depuis la session 2, `onboarding-1`,
+`onboarding-2` et `onboarding-3` ouvrent l'onboarding directement sur la page
+voulue — sans ça les écrans 2 et 3 ne sont atteignables qu'en balayant à la main.
 
 ```sh
 xcrun simctl launch <device> com.abdouldotdev.AirPadClient -capture keyboard
@@ -197,6 +216,17 @@ place**. Une fois la fiche créée, tout le reste passe par le MCP `appstore-con
 captures, groupe d'abonnement, produits, prix, notes de review, soumission.
 
 Langue : **fiche en anglais** (locale primaire `en-US`).
+
+**Tous les textes sont déjà rédigés et versionnés** dans `Store/` :
+- `Store/listing-en-US.md` — nom, sous-titre, texte promotionnel, mots-clés
+  (exactement 100 caractères), description, nouveautés, URL, catégories, âge.
+  La description annonce explicitement que le clavier relève de l'abonnement.
+- `Store/review-notes.md` — notes de review complètes (installation du compagnon
+  Mac, autorisation Accessibilité, appairage, ce qui est gratuit vs payant).
+- `Store/demo-video.md` — découpage de la vidéo à joindre.
+
+Il n'y a donc plus rien à rédiger : une fois la fiche créée, tout se pousse
+par le MCP à partir de ces fichiers.
 
 ⚠️ **Risque de rejet n°1** : le reviewer n'aura pas de Mac appairé. Prévoir dans
 les notes de review une explication du fonctionnement en réseau local **et une
