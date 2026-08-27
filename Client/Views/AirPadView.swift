@@ -23,7 +23,10 @@ struct AirPadView: View {
         KeyboardLayout(rawValue: keyboardLayoutRaw) ?? .qwerty
     }
 
-    private var hasKeyboard: Bool { subscriptions.has(.keyboard) }
+    /// L'accès aux fonctions passe par un abonnement actif — l'essai gratuit
+    /// en est un : RevenueCat garde l'entitlement actif pendant toute sa durée.
+    private var hasPro: Bool { subscriptions.has(.keyboard) }
+    private var hasKeyboard: Bool { hasPro }
 
     var body: some View {
         ZStack {
@@ -142,8 +145,15 @@ struct AirPadView: View {
                     .frame(height: trackpadHeight)
                     .clipped()
                     .opacity(trackpadHeight > 20 ? 1 : 0)
+                    .blur(radius: hasPro ? 0 : 7)
+                    .disabled(!hasPro)
+                    .allowsHitTesting(hasPro)
             }
         }
+        // L'abonnement commande toute la surface de contrôle, trackpad compris.
+        // Un seul verrou pour les deux zones : deux capsules superposées se
+        // liraient comme deux offres distinctes.
+        .overlay { if !hasPro { keyboardLock } }
     }
 
     private func dockHandle(in geo: GeometryProxy) -> some View {
@@ -242,7 +252,6 @@ struct AirPadView: View {
                 .disabled(!hasKeyboard)
                 .allowsHitTesting(hasKeyboard)
 
-            if !hasKeyboard { keyboardLock }
         }
     }
 
