@@ -5,8 +5,7 @@ import RevenueCat
 
 /// Fonctionnalités soumises à l'abonnement.
 enum PremiumFeature: String, CaseIterable {
-    case trackpad          // trackpad Mac
-    case keyboard          // clavier Mac complet
+    case keyboard          // clavier et trackpad Mac
     case functionRow       // rangée F1-F12
     case pointerSpeed      // vitesse du curseur
     case multiMac          // plusieurs Macs appairés
@@ -14,8 +13,7 @@ enum PremiumFeature: String, CaseIterable {
 
     var title: String {
         switch self {
-        case .trackpad: return T("Mac trackpad", "Trackpad Mac")
-        case .keyboard: return T("Full Mac keyboard", "Clavier Mac complet")
+        case .keyboard: return T("Full Mac keyboard & trackpad", "Clavier et trackpad Mac complets")
         case .functionRow: return T("F1–F12 function row", "Rangée de touches F1–F12")
         case .pointerSpeed: return T("Pointer speed control", "Réglage de la vitesse du curseur")
         case .multiMac: return T("Pair multiple Macs", "Appairer plusieurs Macs")
@@ -25,8 +23,7 @@ enum PremiumFeature: String, CaseIterable {
 
     var subtitle: String {
         switch self {
-        case .trackpad: return T("Move, click and scroll from the couch.", "Déplacez, cliquez et défilez depuis le canapé.")
-        case .keyboard: return T("Type on your Mac from anywhere in the room.", "Tapez sur votre Mac depuis n'importe où dans la pièce.")
+        case .keyboard: return T("Type, move, click and scroll from the couch.", "Tapez, déplacez, cliquez et défilez depuis le canapé.")
         case .functionRow: return T("Volume, brightness, Mission Control.", "Volume, luminosité, Mission Control.")
         case .pointerSpeed: return T("Tune tracking from precise to fast.", "Du pointage précis au déplacement rapide.")
         case .multiMac: return T("Switch between your desktop and laptop.", "Basculez entre votre fixe et votre portable.")
@@ -36,7 +33,6 @@ enum PremiumFeature: String, CaseIterable {
 
     var systemImage: String {
         switch self {
-        case .trackpad: return "rectangle.and.hand.point.up.left"
         case .keyboard: return "keyboard"
         case .functionRow: return "slider.horizontal.3"
         case .pointerSpeed: return "speedometer"

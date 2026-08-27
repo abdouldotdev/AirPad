@@ -57,9 +57,9 @@ struct ProWordmark: View {
     var size: CGFloat = 30
 
     var body: some View {
-        HStack(spacing: size * 0.24) {
+        HStack(spacing: size * 0.28) {
             Image(systemName: "crown.fill")
-                .font(.system(size: size * 0.52, weight: .bold))
+                .font(.system(size: size * 0.78, weight: .bold))
                 .foregroundStyle(Premium.goldSheen)
 
             // Deux Text séparés plutôt que concaténés : un Text concaténé
