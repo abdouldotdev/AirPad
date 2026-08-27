@@ -14,12 +14,13 @@ AirPad
 ## Sous-titre (30 max)
 
 ```
-Remote trackpad for your Mac
+Trackpad & keyboard for Mac
 ```
 
-> Le sous-titre ne promet **que** le trackpad, qui est la partie gratuite.
-> Promettre le clavier ici, alors qu'il est payant, est exactement le motif
-> de rejet 2.3.1 qu'on cherche à éviter.
+> Modèle retenu : **hard paywall intégral**. Rien ne fonctionne sans abonnement
+> actif — l'essai gratuit de 3 jours en est un. Le sous-titre décrit donc la
+> fonction sans laisser entendre qu'elle est gratuite, et la description dit
+> l'abonnement dès la première ligne. C'est la condition pour éviter le 2.3.1.
 
 ## Texte promotionnel (170 max)
 
@@ -38,22 +39,15 @@ remote,trackpad,mouse,touchpad,keyboard,macbook,imac,wireless,control,presenter,
 ```
 AirPad turns your iPhone or iPad into a wireless trackpad and keyboard for your Mac, over your own Wi-Fi network. No cable, no account, no cloud.
 
-Install the free AirPad companion app on your Mac, scan the pairing code it shows, and control your Mac from across the room.
+AirPad Pro is a subscription, and it is required to control your Mac. It starts with a 3-day free trial on the yearly plan.
 
-WHAT'S INCLUDED FOR FREE
-• Full trackpad: move the pointer, tap to click, right-click, two-finger scroll
-• Pair as many Macs as you want
-• Works entirely on your local Wi-Fi — no account to create
-
-WHAT REQUIRES AIRPAD PRO (PAID SUBSCRIPTION)
-The on-screen keyboard and everything built around it is a subscription feature:
-• Full QWERTY and AZERTY keyboard, with the Shift, Command, Option and Control modifiers
-• F1–F12 function row
-• Adjustable pointer speed
-• Three- and four-finger gestures
-• Quick switching between several paired Macs
-
-The trackpad stays free and fully usable. If you never subscribe, you keep it.
+WHAT YOU GET
+• Full Mac trackpad: move the pointer, tap to click, right-click, two-finger scroll
+• Full on-screen keyboard, QWERTY and AZERTY, with the Shift, Command, Option and Control modifiers
+• F1–F12 function row for volume, brightness and Mission Control
+• Adjustable pointer speed, from precise to fast
+• Three- and four-finger gestures to swipe between desktops and apps
+• Pair several Macs and switch between them
 
 HOW IT WORKS
 1. Download the free AirPad companion app for macOS: https://abdouldotdev.github.io/AirPad/
@@ -69,9 +63,9 @@ REQUIREMENTS
 • Both devices connected to the same Wi-Fi network
 
 SUBSCRIPTION DETAILS
-AirPad Pro unlocks the keyboard and is offered as:
+An active AirPad Pro subscription is required to use the trackpad and the keyboard. Two plans:
+• Yearly — $14.99, starting with a 3-day free trial
 • Weekly — $4.99
-• Yearly — $14.99, with a 3-day free trial
 
 Payment is charged to your Apple Account at confirmation of purchase. The subscription renews automatically unless it is cancelled at least 24 hours before the end of the current period. Your account is charged for renewal within 24 hours prior to the end of the current period. You can manage or cancel your subscription in your Apple Account settings after purchase. Any unused portion of a free trial period is forfeited when you purchase a subscription.
 
@@ -84,8 +78,8 @@ Privacy Policy: https://abdouldotdev.github.io/AirPad/privacy.html
 ```
 First release.
 
-• Turn your iPhone or iPad into a trackpad for your Mac, over your own Wi-Fi
-• Full on-screen keyboard with QWERTY and AZERTY layouts (AirPad Pro)
+• Turn your iPhone or iPad into a trackpad and keyboard for your Mac
+• Works over your own Wi-Fi — nothing is sent to the internet
 • Secure pairing with an 8-character code shown on your Mac
 • Nothing leaves your local network
 ```
