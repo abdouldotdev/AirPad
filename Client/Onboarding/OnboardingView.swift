@@ -38,6 +38,14 @@ struct OnboardingView: View {
             ),
             OnboardingStep(
                 id: 2,
+                eyebrow: T("AND THE KEYBOARD", "ET LE CLAVIER"),
+                title: T("Type without getting up", "Tapez sans vous lever"),
+                body: T("A full keyboard with ⇧ ⌘ ⌥ ⌃ and the F1–F12 row, right under your thumbs. Search, rename, reply — without leaving the couch.",
+                        "Un clavier complet avec ⇧ ⌘ ⌥ ⌃ et la rangée F1–F12, sous vos pouces. Chercher, renommer, répondre — sans quitter le canapé."),
+                illustration: AnyView(KeyboardIllustration())
+            ),
+            OnboardingStep(
+                id: 3,
                 eyebrow: T("ONE STEP LEFT", "DERNIÈRE ÉTAPE"),
                 title: T("Scan the code on your Mac", "Scannez le code sur votre Mac"),
                 body: T("Install the free AirPad companion on your Mac, then scan the pairing code it shows. It takes about a minute.",
@@ -145,9 +153,7 @@ struct OnboardingView: View {
         }
     }
 
-    private var accentColor: Color {
-        [Color(red: 0.98, green: 0.45, blue: 0.28), Color(red: 0.25, green: 0.55, blue: 1.0), Color(red: 0.2, green: 0.78, blue: 0.55)][index]
-    }
+    private var accentColor: Color { OnboardingPalette.accent(for: index) }
 
     private func advance() {
         if index < steps.count - 1 {

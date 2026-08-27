@@ -26,7 +26,7 @@ enum CaptureMode {
     static var onboardingStep: Int? {
         guard let screen, screen.hasPrefix("onboarding") else { return nil }
         let parts = screen.split(separator: "-")
-        guard parts.count == 2, let page = Int(parts[1]), (1...3).contains(page) else { return nil }
+        guard parts.count == 2, let page = Int(parts[1]), (1...4).contains(page) else { return nil }
         return page - 1
     }
 
