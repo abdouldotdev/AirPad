@@ -113,7 +113,10 @@ struct AirPadView: View {
         case .connected: return T("Connected", "Connecté")
         case .connecting: return T("Connecting…", "Connexion…")
         case .reconnecting: return T("Reconnecting…", "Reconnexion…")
-        case .rejected: return T("Pairing rejected", "Appairage refusé")
+        // Un refus est sans issue tant qu'on ne dit pas laquelle : le jeton
+        // stocké est périmé, et seul un ré-appairage le remplace. La pastille
+        // ouvre déjà les réglages — encore fallait-il l'annoncer.
+        case .rejected: return T("Pairing rejected — tap to re-pair", "Appairage refusé — toucher pour ré-appairer")
         default: return T("Not connected", "Non connecté")
         }
     }
