@@ -308,7 +308,7 @@ struct AirPadView: View {
                     .padding(.horizontal, 22)
                     .frame(height: 44)
                     .background(
-                        LinearGradient(colors: [.blue, .purple], startPoint: .leading, endPoint: .trailing),
+                        Brand.accent,
                         in: Capsule()
                     )
                     .foregroundStyle(.white)

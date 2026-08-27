@@ -98,7 +98,7 @@ struct SettingsView: View {
                         .foregroundStyle(.white)
                         .frame(width: 42, height: 42)
                         .background(
-                            LinearGradient(colors: [.blue, .purple], startPoint: .topLeading, endPoint: .bottomTrailing),
+                            Brand.accent,
                             in: RoundedRectangle(cornerRadius: 11, style: .continuous)
                         )
                     VStack(alignment: .leading, spacing: 2) {
@@ -182,7 +182,7 @@ struct SettingsView: View {
             .font(.system(size: 10, weight: .heavy))
             .padding(.horizontal, 7)
             .padding(.vertical, 3)
-            .background(LinearGradient(colors: [.blue, .purple], startPoint: .leading, endPoint: .trailing), in: Capsule())
+            .background(Brand.accent, in: Capsule())
             .foregroundStyle(.white)
     }
 

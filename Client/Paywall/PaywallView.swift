@@ -9,6 +9,8 @@ struct PaywallView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var selectedPlanID: String?
     @State private var isWorking = false
+    /// Le pré-paywall passe la main à la grille dès que l'utilisateur veut comparer.
+    @State private var showsAllPlans = false
 
     var body: some View {
         ZStack {
@@ -16,18 +18,35 @@ struct PaywallView: View {
                            startPoint: .top, endPoint: .bottom)
                 .ignoresSafeArea()
 
-            ScrollView {
-                VStack(spacing: 26) {
-                    header
-                    featureList
-                    planPicker
-                    purchaseButton
+            if let trialPlan, !showsAllPlans {
+                VStack(spacing: 0) {
+                    TrialIntroView(
+                        plan: trialPlan,
+                        onStart: {
+                            selectedPlanID = trialPlan.id
+                            Analytics.shared.capture(Event.paywallPlanSelected, ["plan": trialPlan.id])
+                            Task { await purchase() }
+                        },
+                        onSeeAllPlans: { showsAllPlans = true }
+                    )
                     footer
                 }
-                .padding(.horizontal, 24)
-                .padding(.vertical, 28)
                 .frame(maxWidth: 540)
                 .frame(maxWidth: .infinity)
+            } else {
+                ScrollView {
+                    VStack(spacing: 26) {
+                        header
+                        featureList
+                        planPicker
+                        purchaseButton
+                        footer
+                    }
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 28)
+                    .frame(maxWidth: 540)
+                    .frame(maxWidth: .infinity)
+                }
             }
 
             if subscriptions.isLoading || isWorking {
@@ -68,18 +87,13 @@ struct PaywallView: View {
 
     private var header: some View {
         VStack(spacing: 12) {
-            Image(systemName: trigger?.systemImage ?? "sparkles")
-                .font(.system(size: 34, weight: .semibold))
-                .foregroundStyle(.white)
+            Image("SplashIcon")
+                .resizable()
+                .scaledToFill()
                 .frame(width: 76, height: 76)
-                .background(
-                    LinearGradient(colors: [Color.blue, Color.purple], startPoint: .topLeading, endPoint: .bottomTrailing),
-                    in: RoundedRectangle(cornerRadius: 22, style: .continuous)
-                )
+                .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
 
-            Text(T("AirPad Pro", "AirPad Pro"))
-                .font(.system(size: 30, weight: .bold, design: .rounded))
-                .foregroundStyle(.white)
+            ProWordmark(size: 30)
 
             Text(trigger?.subtitle ?? T("Everything your Mac keyboard and trackpad can do, on your phone.",
                                         "Tout ce que font le clavier et le trackpad de votre Mac, sur votre téléphone."))
@@ -117,14 +131,34 @@ struct PaywallView: View {
     @ViewBuilder
     private var planPicker: some View {
         if subscriptions.plans.isEmpty {
-            Text(T("Plans are unavailable right now. Check your connection and try again.",
-                   "Les offres sont indisponibles pour le moment. Vérifiez votre connexion et réessayez."))
-                .font(.footnote)
-                .multilineTextAlignment(.center)
-                .foregroundStyle(.white.opacity(0.6))
-                .padding(.vertical, 18)
+            VStack(spacing: 14) {
+                Text(unavailableMessage)
+                    .font(.footnote)
+                    .multilineTextAlignment(.center)
+                    .foregroundStyle(.white.opacity(0.6))
+
+                // « Réessayez » sans bouton laisse l'utilisateur dans une impasse :
+                // rouvrir le paywall est la seule issue, et rien ne le dit.
+                if subscriptions.plansState.isRetryable {
+                    Button(T("Try again", "Réessayer")) {
+                        Task { await subscriptions.refresh() }
+                    }
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.white)
+                }
+
+            }
+            .padding(.vertical, 18)
         } else {
             VStack(spacing: 12) {
+                #if DEBUG
+                if subscriptions.usesStubPlans {
+                    Text("DEBUG — tarifs simulés : les produits n'existent pas encore dans App Store Connect")
+                        .font(.caption2)
+                        .multilineTextAlignment(.center)
+                        .foregroundStyle(.orange.opacity(0.9))
+                }
+                #endif
                 ForEach(subscriptions.plans) { plan in
                     PlanRow(plan: plan, isSelected: plan.id == selectedPlanID)
                         .onTapGesture {
@@ -133,6 +167,20 @@ struct PaywallView: View {
                         }
                 }
             }
+        }
+    }
+
+    private var unavailableMessage: String {
+        switch subscriptions.plansState {
+        case .failed:
+            return T("We couldn't reach the App Store. Check your connection and try again.",
+                     "Impossible de joindre l'App Store. Vérifiez votre connexion et réessayez.")
+        case .notConfigured:
+            return T("In-app purchases aren't available in this build.",
+                     "Les achats intégrés ne sont pas disponibles dans cette version.")
+        default:
+            return T("No subscription is available for this account right now. This can happen if purchases are restricted on the device.",
+                     "Aucun abonnement n'est disponible pour ce compte pour le moment. Cela arrive si les achats sont restreints sur l'appareil.")
         }
     }
 
@@ -148,7 +196,7 @@ struct PaywallView: View {
                     .frame(maxWidth: .infinity)
                     .frame(height: 54)
                     .background(
-                        LinearGradient(colors: [Color.blue, Color.purple], startPoint: .leading, endPoint: .trailing),
+                        Brand.accent,
                         in: RoundedRectangle(cornerRadius: 16, style: .continuous)
                     )
                     .foregroundStyle(.white)
@@ -180,6 +228,12 @@ struct PaywallView: View {
         .font(.caption)
         .foregroundStyle(.white.opacity(0.55))
         .padding(.bottom, 12)
+    }
+
+    /// L'essai gratuit n'existe que sur l'annuel : sans lui, pas de pré-paywall,
+    /// on va droit à la grille plutôt que de promettre un essai inexistant.
+    private var trialPlan: SubscriptionPlan? {
+        subscriptions.plans.first(where: { $0.trialDescription != nil })
     }
 
     private var selectedPlan: SubscriptionPlan? {

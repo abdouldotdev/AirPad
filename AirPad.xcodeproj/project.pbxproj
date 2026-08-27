@@ -17,6 +17,7 @@
 		4AB48C7983335C73BACC129F /* NetworkClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7A1BC82A664D94939ED8E21 /* NetworkClient.swift */; };
 		4F59DA11CECCFEF0141C9EE9 /* KeyboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AC7C456530460CF3087DF11 /* KeyboardView.swift */; };
 		559CF95EB1BAAB15F49F82E7 /* TrackpadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4087355484AEC09E062D087E /* TrackpadView.swift */; };
+		7E998042C6172329BB07208E /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8BC2D9CBD58199FCE367E6A /* Theme.swift */; };
 		889F53D5A5001658902F26A3 /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29677A31F8171490B14B03EE /* PaywallView.swift */; };
 		A56FAC1837917087465CF660 /* SubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBBCBD8515B964BB59C76B44 /* SubscriptionManager.swift */; };
 		A5A219DCBE21A57197A85376 /* PairingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EF9428A89CF7CBAC54E9399 /* PairingView.swift */; };
@@ -25,6 +26,7 @@
 		C5FA355DCCB48377595DEE5A /* AirPadApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB77FB4CC19AAE1CDADC28E1 /* AirPadApp.swift */; };
 		D1BF0F5C3ED6A953D830FBFB /* PairedMac.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78C66586A928781737AA800D /* PairedMac.swift */; };
 		D1FFD143BEA91B4E162D53EC /* OnboardingIllustrations.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD3046C82DD9A51EAB8B5B88 /* OnboardingIllustrations.swift */; };
+		DC509E310B7BF7B822347C1E /* TrialIntroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95DD153778A907125EEE8E4 /* TrialIntroView.swift */; };
 		DE63B14CBD86E8E77DD59F59 /* Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99582E017A94B2D80BA60854 /* Server.swift */; };
 		DF6F4648704249A448D1DE41 /* MouseServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F843BC19B017AD14C3BB723D /* MouseServer.swift */; };
 		E6A1085F10DEFB645133C920 /* KeyboardModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB69BDE75742BCA6BA501AD4 /* KeyboardModel.swift */; };
@@ -51,6 +53,8 @@
 		9577566716851E5CD4FFD3E8 /* AirPadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AirPadView.swift; sourceTree = "<group>"; };
 		99582E017A94B2D80BA60854 /* Server.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Server.swift; sourceTree = "<group>"; };
 		B7A1BC82A664D94939ED8E21 /* NetworkClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkClient.swift; sourceTree = "<group>"; };
+		B8BC2D9CBD58199FCE367E6A /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		B95DD153778A907125EEE8E4 /* TrialIntroView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrialIntroView.swift; sourceTree = "<group>"; };
 		BD3046C82DD9A51EAB8B5B88 /* OnboardingIllustrations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingIllustrations.swift; sourceTree = "<group>"; };
 		C4040A706001A2381889EA6A /* QRScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRScannerView.swift; sourceTree = "<group>"; };
 		CB77FB4CC19AAE1CDADC28E1 /* AirPadApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AirPadApp.swift; sourceTree = "<group>"; };
@@ -151,6 +155,7 @@
 				F57A0E6C2693DFD46FF77CA5 /* Assets.xcassets */,
 				2FBD8257C628C03FFBA5E600 /* Info.plist */,
 				E78EEB0BBAA5742073B1D9CF /* Localization.swift */,
+				B8BC2D9CBD58199FCE367E6A /* Theme.swift */,
 				5EFF8AA1C59F0ECB778EDD27 /* Keyboard */,
 				5FAE62DFB0164096C978420A /* Networking */,
 				4ABAA4FAF774A15F171E6803 /* Onboarding */,
@@ -176,6 +181,7 @@
 			isa = PBXGroup;
 			children = (
 				29677A31F8171490B14B03EE /* PaywallView.swift */,
+				B95DD153778A907125EEE8E4 /* TrialIntroView.swift */,
 			);
 			path = Paywall;
 			sourceTree = "<group>";
@@ -322,7 +328,9 @@
 				0C4A58219CCA419780CE6013 /* QRScannerView.swift in Sources */,
 				496949CC7BFA7D0F0B5D3454 /* SettingsView.swift in Sources */,
 				A56FAC1837917087465CF660 /* SubscriptionManager.swift in Sources */,
+				7E998042C6172329BB07208E /* Theme.swift in Sources */,
 				559CF95EB1BAAB15F49F82E7 /* TrackpadView.swift in Sources */,
+				DC509E310B7BF7B822347C1E /* TrialIntroView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

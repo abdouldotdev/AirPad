@@ -51,6 +51,29 @@ struct SubscriptionPlan: Identifiable, Equatable {
     let isBestValue: Bool
 }
 
+/// Pourquoi la liste des formules est vide. Les trois causes demandent trois
+/// réponses différentes : « vérifiez votre connexion » sur une offre absente du
+/// store est un mensonge, et il envoie l'utilisateur redémarrer son Wi-Fi pour rien.
+enum PlansState: Equatable {
+    case idle
+    case loading
+    /// RevenueCat a répondu et l'offering ne contient aucun produit achetable.
+    case unavailable
+    /// L'appel lui-même a échoué : réseau, App Store injoignable.
+    case failed(String)
+    /// Aucune clé RevenueCat : build de développement, l'achat n'existe pas.
+    case notConfigured
+    case ready
+
+    /// Réessayer n'a de sens que si l'échec peut se résoudre tout seul.
+    var isRetryable: Bool {
+        switch self {
+        case .unavailable, .failed: return true
+        case .idle, .loading, .notConfigured, .ready: return false
+        }
+    }
+}
+
 @MainActor
 final class SubscriptionManager: ObservableObject {
     static let entitlementID = "airpad_pro"
@@ -59,6 +82,12 @@ final class SubscriptionManager: ObservableObject {
     @Published private(set) var plans: [SubscriptionPlan] = []
     @Published private(set) var isLoading = false
     @Published var lastError: String?
+    @Published private(set) var plansState: PlansState = .idle
+    /// Vrai quand le paywall affiche des tarifs simulés : l'écran doit le dire,
+    /// sinon une capture d'écran de développement passe pour une vraie offre.
+    @Published private(set) var usesStubPlans = false
+    /// Détail technique du dernier échec, montré en Debug seulement.
+    @Published private(set) var debugError: String?
 
     var onEvent: ((String, [String: Any]) -> Void)?
 
@@ -73,14 +102,19 @@ final class SubscriptionManager: ObservableObject {
     private var offering: Offering?
 
     func configure(apiKey: String) {
-        guard !apiKey.isEmpty else { return }
+        guard !apiKey.isEmpty else {
+            plansState = .notConfigured
+            return
+        }
         Purchases.logLevel = .warn
         Purchases.configure(withAPIKey: apiKey)
         Task { await refresh() }
     }
 
     func refresh() async {
+        guard plansState != .notConfigured else { return }
         isLoading = true
+        plansState = .loading
         defer { isLoading = false }
         do {
             let info = try await Purchases.shared.customerInfo()
@@ -88,9 +122,43 @@ final class SubscriptionManager: ObservableObject {
             let offerings = try await Purchases.shared.offerings()
             offering = offerings.current
             plans = (offering?.availablePackages ?? []).map(Self.plan(from:))
+            // Un offering qui répond sans produit achetable n'est pas une panne :
+            // c'est le cas quand les produits n'existent pas encore côté App Store
+            // Connect, ou que les achats sont restreints sur l'appareil.
+            plansState = plans.isEmpty ? .unavailable : .ready
         } catch {
-            lastError = error.localizedDescription
+            // RevenueCat lève `configurationError` quand aucun produit du tableau
+            // de bord n'a pu être récupéré depuis App Store Connect. Ce n'est pas
+            // une panne réseau : le dire envoie l'utilisateur chercher un problème
+            // qui n'existe pas chez lui.
+            plansState = Self.isStoreConfigurationError(error)
+                ? .unavailable
+                : .failed(error.localizedDescription)
+            // `lastError` déclenche une alerte modale. Un rafraîchissement qui
+            // échoue en arrière-plan est déjà raconté par l'état vide ; y ajouter
+            // une alerte revient à montrer à l'utilisateur le message de dépannage
+            // du SDK, URL internes comprises.
+            debugError = error.localizedDescription
         }
+
+        #if DEBUG
+        // Sans produits côté App Store Connect, l'offering ne revient jamais :
+        // la mise en page du paywall serait impossible à juger. Ces formules
+        // calquent les tarifs configurés dans RevenueCat et disparaissent du
+        // binaire en Release.
+        if plans.isEmpty {
+            plans = Self.stubPlans
+            usesStubPlans = true
+            plansState = .ready
+        }
+        #endif
+    }
+
+    /// Vrai si l'échec vient de la configuration du store, pas du réseau.
+    private static func isStoreConfigurationError(_ error: Error) -> Bool {
+        let nsError = error as NSError
+        guard nsError.domain.contains("RevenueCat") else { return false }
+        return ErrorCode(rawValue: nsError.code) == .configurationError
     }
 
     func purchase(planID: String) async -> Bool {
@@ -138,6 +206,18 @@ final class SubscriptionManager: ObservableObject {
         isSubscribed = info.entitlements[Self.entitlementID]?.isActive == true
     }
 
+    #if DEBUG
+    static let stubPlans: [SubscriptionPlan] = [
+        SubscriptionPlan(id: "$rc_annual", title: T("Yearly", "Annuel"), price: "$14.99",
+                         period: T("per year", "par an"),
+                         trialDescription: T("3-day free trial", "3 jours d'essai gratuit"),
+                         isBestValue: true),
+        SubscriptionPlan(id: "$rc_weekly", title: T("Weekly", "Hebdomadaire"), price: "$4.99",
+                         period: T("per week", "par semaine"),
+                         trialDescription: nil, isBestValue: false)
+    ]
+    #endif
+
     private static func plan(from package: Package) -> SubscriptionPlan {
         let product = package.storeProduct
         let isAnnual = package.packageType == .annual
@@ -157,7 +237,7 @@ final class SubscriptionManager: ObservableObject {
     }
     #else
     // Le SDK n'est pas encore lié : l'app reste compilable et testable en gratuit.
-    func configure(apiKey: String) {}
+    func configure(apiKey: String) { plansState = .notConfigured }
     func refresh() async {}
     func purchase(planID: String) async -> Bool { false }
     func restore() async -> Bool { false }
