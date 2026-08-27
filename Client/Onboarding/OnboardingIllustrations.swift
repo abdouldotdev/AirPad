@@ -6,12 +6,11 @@ import SwiftUI
 /// Un accent par écran. Une seule liste, parce que le halo de fond et
 /// l'illustration doivent s'accorder : deux copies finissent toujours par diverger.
 enum OnboardingPalette {
-    static let steps: [Color] = [
-        Color(red: 0.98, green: 0.45, blue: 0.28),
-        Color(red: 0.25, green: 0.55, blue: 1.00),
-        Color(red: 0.20, green: 0.78, blue: 0.55),
-        Color(red: 0.58, green: 0.47, blue: 0.98)
-    ]
+    /// Un seul ton, celui de l'icône. Quatre couleurs donnaient à chaque écran
+    /// sa propre identité : le halo changeait de teinte d'un balayage à l'autre
+    /// et l'onboarding se lisait comme quatre applications différentes.
+    /// La progression est déjà portée par les pastilles.
+    static let steps: [Color] = Array(repeating: Brand.accent, count: 4)
 
     /// Bornée volontairement : ajouter un écran sans ajouter sa couleur
     /// ferait planter l'onboarding sur un index hors limites.
@@ -140,7 +139,7 @@ struct KeyboardIllustration: View {
 }
 
 /// L'accent de l'écran du clavier : la touche active doit s'accorder au halo de fond.
-private let keyboardAccent = OnboardingPalette.steps[2]
+private let keyboardAccent = Brand.accent
 
 private struct MiniKeyboard: View {
     let activeKey: Int?
@@ -205,7 +204,7 @@ struct PairingIllustration: View {
                 .overlay(
                     // Le trait de scan indique sans mot que le téléphone lit le code.
                     Rectangle()
-                        .fill(LinearGradient(colors: [.clear, OnboardingPalette.steps[3], .clear],
+                        .fill(LinearGradient(colors: [.clear, Brand.accent, .clear],
                                              startPoint: .top, endPoint: .bottom))
                         .frame(width: 58, height: 22)
                         .offset(y: -8 + sweep)
@@ -230,12 +229,12 @@ struct PhoneShape: View {
             .fill(Color(white: 0.16))
             .overlay(
                 RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .stroke(isActive ? Color.blue.opacity(0.8) : Color.white.opacity(0.18), lineWidth: 1.5)
+                    .stroke(isActive ? Brand.accent.opacity(0.8) : Color.white.opacity(0.18), lineWidth: 1.5)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 9, style: .continuous)
                     .fill(isActive
-                          ? LinearGradient(colors: [Color.blue.opacity(0.35), Color.blue.opacity(0.12)],
+                          ? LinearGradient(colors: [Brand.accent.opacity(0.35), Brand.accent.opacity(0.12)],
                                            startPoint: .top, endPoint: .bottom)
                           : LinearGradient(colors: [Color.white.opacity(0.05)], startPoint: .top, endPoint: .bottom))
                     .padding(5)

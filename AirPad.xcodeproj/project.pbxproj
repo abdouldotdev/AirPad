@@ -26,7 +26,6 @@
 		C5FA355DCCB48377595DEE5A /* AirPadApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB77FB4CC19AAE1CDADC28E1 /* AirPadApp.swift */; };
 		D1BF0F5C3ED6A953D830FBFB /* PairedMac.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78C66586A928781737AA800D /* PairedMac.swift */; };
 		D1FFD143BEA91B4E162D53EC /* OnboardingIllustrations.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD3046C82DD9A51EAB8B5B88 /* OnboardingIllustrations.swift */; };
-		DC509E310B7BF7B822347C1E /* TrialIntroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95DD153778A907125EEE8E4 /* TrialIntroView.swift */; };
 		DE63B14CBD86E8E77DD59F59 /* Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99582E017A94B2D80BA60854 /* Server.swift */; };
 		DF6F4648704249A448D1DE41 /* MouseServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F843BC19B017AD14C3BB723D /* MouseServer.swift */; };
 		E6A1085F10DEFB645133C920 /* KeyboardModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB69BDE75742BCA6BA501AD4 /* KeyboardModel.swift */; };
@@ -54,7 +53,6 @@
 		99582E017A94B2D80BA60854 /* Server.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Server.swift; sourceTree = "<group>"; };
 		B7A1BC82A664D94939ED8E21 /* NetworkClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkClient.swift; sourceTree = "<group>"; };
 		B8BC2D9CBD58199FCE367E6A /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
-		B95DD153778A907125EEE8E4 /* TrialIntroView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrialIntroView.swift; sourceTree = "<group>"; };
 		BD3046C82DD9A51EAB8B5B88 /* OnboardingIllustrations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingIllustrations.swift; sourceTree = "<group>"; };
 		C4040A706001A2381889EA6A /* QRScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRScannerView.swift; sourceTree = "<group>"; };
 		CB77FB4CC19AAE1CDADC28E1 /* AirPadApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AirPadApp.swift; sourceTree = "<group>"; };
@@ -181,7 +179,6 @@
 			isa = PBXGroup;
 			children = (
 				29677A31F8171490B14B03EE /* PaywallView.swift */,
-				B95DD153778A907125EEE8E4 /* TrialIntroView.swift */,
 			);
 			path = Paywall;
 			sourceTree = "<group>";
@@ -330,7 +327,6 @@
 				A56FAC1837917087465CF660 /* SubscriptionManager.swift in Sources */,
 				7E998042C6172329BB07208E /* Theme.swift in Sources */,
 				559CF95EB1BAAB15F49F82E7 /* TrackpadView.swift in Sources */,
-				DC509E310B7BF7B822347C1E /* TrialIntroView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

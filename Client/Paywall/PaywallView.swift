@@ -9,8 +9,6 @@ struct PaywallView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var selectedPlanID: String?
     @State private var isWorking = false
-    /// Le pré-paywall passe la main à la grille dès que l'utilisateur veut comparer.
-    @State private var showsAllPlans = false
 
     var body: some View {
         ZStack {
@@ -18,35 +16,18 @@ struct PaywallView: View {
                            startPoint: .top, endPoint: .bottom)
                 .ignoresSafeArea()
 
-            if let trialPlan, !showsAllPlans {
-                VStack(spacing: 0) {
-                    TrialIntroView(
-                        plan: trialPlan,
-                        onStart: {
-                            selectedPlanID = trialPlan.id
-                            Analytics.shared.capture(Event.paywallPlanSelected, ["plan": trialPlan.id])
-                            Task { await purchase() }
-                        },
-                        onSeeAllPlans: { showsAllPlans = true }
-                    )
+            ScrollView {
+                VStack(spacing: 24) {
+                    header
+                    featureList
+                    planPicker
+                    purchaseButton
                     footer
                 }
+                .padding(.horizontal, 24)
+                .padding(.vertical, 24)
                 .frame(maxWidth: 540)
                 .frame(maxWidth: .infinity)
-            } else {
-                ScrollView {
-                    VStack(spacing: 26) {
-                        header
-                        featureList
-                        planPicker
-                        purchaseButton
-                        footer
-                    }
-                    .padding(.horizontal, 24)
-                    .padding(.vertical, 28)
-                    .frame(maxWidth: 540)
-                    .frame(maxWidth: .infinity)
-                }
             }
 
             if subscriptions.isLoading || isWorking {
@@ -110,7 +91,7 @@ struct PaywallView: View {
                 HStack(spacing: 14) {
                     Image(systemName: feature.systemImage)
                         .font(.system(size: 16, weight: .semibold))
-                        .foregroundStyle(feature == trigger ? Color.blue : .white.opacity(0.85))
+                        .foregroundStyle(feature == trigger ? Brand.accent : .white.opacity(0.85))
                         .frame(width: 30)
                     VStack(alignment: .leading, spacing: 2) {
                         Text(feature.title)
@@ -123,6 +104,16 @@ struct PaywallView: View {
                     Spacer(minLength: 0)
                 }
             }
+
+            // Rappeler ce qui reste gratuit sur l'écran qui vend : c'est ce que
+            // vérifie App Review pour la règle 2.3.1, et ça désamorce le doute
+            // « est-ce qu'on me retire quelque chose que j'avais ? ».
+            Divider().overlay(Color.white.opacity(0.12))
+            Text(T("The trackpad — pointer, clicks and scrolling — stays free, always.",
+                   "Le trackpad — curseur, clics et défilement — reste gratuit, toujours."))
+                .font(.caption)
+                .foregroundStyle(.white.opacity(0.5))
+                .fixedSize(horizontal: false, vertical: true)
         }
         .padding(18)
         .background(Color.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
@@ -230,12 +221,6 @@ struct PaywallView: View {
         .padding(.bottom, 12)
     }
 
-    /// L'essai gratuit n'existe que sur l'annuel : sans lui, pas de pré-paywall,
-    /// on va droit à la grille plutôt que de promettre un essai inexistant.
-    private var trialPlan: SubscriptionPlan? {
-        subscriptions.plans.first(where: { $0.trialDescription != nil })
-    }
-
     private var selectedPlan: SubscriptionPlan? {
         subscriptions.plans.first(where: { $0.id == selectedPlanID })
     }
@@ -257,7 +242,7 @@ struct PlanRow: View {
         HStack(spacing: 14) {
             Image(systemName: isSelected ? "largecircle.fill.circle" : "circle")
                 .font(.system(size: 20))
-                .foregroundStyle(isSelected ? Color.blue : .white.opacity(0.3))
+                .foregroundStyle(isSelected ? Brand.accent : .white.opacity(0.3))
 
             VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 8) {
@@ -269,7 +254,7 @@ struct PlanRow: View {
                             .font(.system(size: 9, weight: .heavy))
                             .padding(.horizontal, 7)
                             .padding(.vertical, 3)
-                            .background(Color.green, in: Capsule())
+                            .background(Brand.accent, in: Capsule())
                             .foregroundStyle(.black)
                     }
                 }
@@ -298,7 +283,7 @@ struct PlanRow: View {
         )
         .overlay(
             RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .stroke(isSelected ? Color.blue : Color.white.opacity(0.12), lineWidth: isSelected ? 2 : 1)
+                .stroke(isSelected ? Brand.accent : Color.white.opacity(0.12), lineWidth: isSelected ? 2 : 1)
         )
         .contentShape(Rectangle())
     }

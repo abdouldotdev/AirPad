@@ -285,38 +285,62 @@ struct AirPadView: View {
             .onAppear { }
     }
 
+    /// Ce qui recouvre le clavier verrouillé.
+    ///
+    /// Un panneau qui dit « c'est payant » ferme la porte ; celui-ci l'ouvre en
+    /// annonçant d'abord ce que ça coûte aujourd'hui — rien. Le prix qui viendra
+    /// est écrit juste en dessous : le cacher fait gagner un essai et perd la
+    /// confiance au premier prélèvement.
     private var keyboardLock: some View {
-        VStack(spacing: 14) {
-            Image(systemName: "keyboard")
-                .font(.system(size: 34, weight: .semibold))
-                .foregroundStyle(.white.opacity(0.85))
-            VStack(spacing: 5) {
-                Text(T("Type on your Mac", "Tapez sur votre Mac"))
-                    .font(.headline)
-                    .foregroundStyle(.white)
-                Text(T("The full Mac keyboard is part of AirPad Pro.",
-                       "Le clavier Mac complet fait partie d'AirPad Pro."))
-                    .font(.caption)
-                    .multilineTextAlignment(.center)
-                    .foregroundStyle(.white.opacity(0.65))
-            }
+        VStack(spacing: 0) {
+            Spacer(minLength: 0)
+
+            ProWordmark(size: 17)
+
+            Text(T("Try it free for 3 days", "Essayez 3 jours, gratuitement"))
+                .font(.system(size: 23, weight: .bold, design: .rounded))
+                .multilineTextAlignment(.center)
+                .foregroundStyle(.white)
+                .padding(.top, 10)
+
+            Text(T("$0.00 today", "0,00 $ aujourd'hui"))
+                .font(.title3.weight(.bold))
+                .foregroundStyle(Brand.accent)
+                .padding(.top, 2)
+
+            Text(T("The full Mac keyboard, F1–F12, pointer speed, gestures and multi-Mac — unlocked right away.",
+                   "Le clavier Mac complet, F1–F12, la vitesse du curseur, les gestes et le multi-Mac — débloqués aussitôt."))
+                .font(.caption)
+                .multilineTextAlignment(.center)
+                .foregroundStyle(.white.opacity(0.6))
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.top, 10)
+                .padding(.horizontal, 12)
+
             Button {
                 present(.keyboard)
             } label: {
-                Text(T("Unlock keyboard", "Débloquer le clavier"))
+                Text(T("Start my free trial", "Démarrer mon essai gratuit"))
                     .font(.subheadline.weight(.semibold))
-                    .padding(.horizontal, 22)
-                    .frame(height: 44)
-                    .background(
-                        Brand.accent,
-                        in: Capsule()
-                    )
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 48)
+                    .background(Brand.accent, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
                     .foregroundStyle(.white)
             }
+            .padding(.top, 16)
+
+            Text(T("Then billed yearly. Cancel anytime.", "Puis facturé à l'année. Résiliable à tout moment."))
+                .font(.caption2)
+                .foregroundStyle(.white.opacity(0.45))
+                .padding(.top, 8)
+
+            Spacer(minLength: 0)
         }
-        .padding(24)
-        .background(Color.black.opacity(0.55), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
-        .padding(.horizontal, 28)
+        .padding(.vertical, 20)
+        .padding(.horizontal, 22)
+        .frame(maxWidth: 420)
+        .background(Color.black.opacity(0.62), in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .padding(.horizontal, 18)
     }
 
     private func present(_ feature: PremiumFeature) {
